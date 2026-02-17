@@ -1,20 +1,13 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #0e2a47; /* mismo tono que la imagen */
+  background-color: #0e2a47;
   color: white;
 }
 
 .header {
-  position: relative;
   text-align: center;
-}
-
-.header img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  background-color: #0e2a47;
+  padding: 15px;
 }
 
 .login-btn {
@@ -42,25 +35,26 @@ body {
   border: none;
 }
 
-.search-section {
-  text-align: center;
-  margin-top: 20px;
+.table-section {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
-.search-section input {
-  width: 250px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
   padding: 10px;
-  border-radius: 6px;
-  border: none;
+  border-bottom: 1px solid #1c4b7a;
 }
 
-#suggestions div {
-  cursor: pointer;
-  padding: 5px;
-}
-
-#suggestions div:hover {
+tr:hover {
   background-color: #1c4b7a;
+  cursor: pointer;
 }
 
 .result-box {
@@ -83,10 +77,6 @@ body {
   cursor: pointer;
 }
 
-.selected {
-  background-color: #2f6fb2 !important;
-}
-
 .footer {
   position: fixed;
   bottom: 10px;
@@ -94,13 +84,20 @@ body {
   font-size: 14px;
 }
 
-.footer a {
+#myName {
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: #1c4b7a;
+  border-radius: 8px;
   color: white;
-  text-decoration: none;
-  margin-left: 5px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+#myName:hover {
+  background-color: #2f6fb2;
 }
 
 .hidden {
   display: none;
 }
-
