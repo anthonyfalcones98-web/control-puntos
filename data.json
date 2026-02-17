@@ -1,5 +1,8 @@
 {
-  "admins": ["Antho98"],
+  "admin": {
+    "username": "Antho98",
+    "password": "Antho42069247"
+  },
   "users": [
     { "name": "Carlos", "points": 10 },
     { "name": "Maria", "points": 25 },
