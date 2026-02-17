@@ -9,18 +9,27 @@
 
 <h1>Lista de Puntos</h1>
 
+<div id="loginBox">
+  <input type="text" id="adminUser" placeholder="Usuario">
+  <input type="password" id="adminPass" placeholder="Contraseña">
+  <button onclick="login()">Login Admin</button>
+</div>
+
+<div id="errorMsg"></div>
+
+<hr>
+
 <input type="text" id="search" placeholder="Buscar nombre...">
 <ul id="suggestions"></ul>
 
 <div id="result"></div>
 
 <div id="adminPanel" style="display:none;">
-  <h3>Panel Admin</h3>
-  <input type="number" id="pointsInput">
-  <button onclick="updatePoints()">Actualizar puntos</button>
+  <h3>Panel Administrador</h3>
+  <button onclick="addPoint()">➕ Sumar 1 punto</button>
+  <button onclick="removePoint()">➖ Quitar 1 punto</button>
+  <button onclick="logout()">🚪 Desloguearse</button>
 </div>
-
-<button onclick="login()">Login</button>
 
 <script src="app.js"></script>
 </body>
