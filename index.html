@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <title>Control de Puntos</title>
@@ -7,10 +7,11 @@
 </head>
 <body>
 
-<h1>Lista de Puntos</h1>
+<h1>Control de Puntos</h1>
 
+<!-- Login Admin -->
 <div id="loginBox">
-  <input type="text" id="adminUser" placeholder="Usuario">
+  <input type="text" id="adminUser" placeholder="Usuario admin">
   <input type="password" id="adminPass" placeholder="Contraseña">
   <button onclick="login()">Login Admin</button>
 </div>
@@ -19,11 +20,15 @@
 
 <hr>
 
-<input type="text" id="search" placeholder="Buscar nombre...">
+<!-- Buscador -->
+<div id="searchBox">
+  <input type="text" id="search" placeholder="🔍 Buscar nombre...">
+</div>
 <ul id="suggestions"></ul>
 
 <div id="result"></div>
 
+<!-- Panel Admin -->
 <div id="adminPanel" style="display:none;">
   <h3>Panel Administrador</h3>
   <button onclick="addPoint()">➕ Sumar 1 punto</button>
@@ -34,3 +39,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+
