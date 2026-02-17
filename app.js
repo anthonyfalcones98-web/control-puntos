@@ -1,8 +1,8 @@
 // CONFIGURACIÓN
-const repoOwner = "anthonyfalcones98-web"; // tu usuario GitHub
-const repoName = "control-puntos"; 
+const repoOwner = "anthonyfalcones98-web"; // tu usuario GitHubconst repoName = "control-puntos"; const repoName = "control-puntos";
 const filePath = "data.json";
-const token = "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"; // tu token GitHub
+const token = "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"; // token GitHub
+
 
 let data;
 let selectedUser = null;
@@ -80,7 +80,7 @@ function login() {
   } else {
     isAdmin = false;
     document.getElementById("errorMsg").innerText =
-      "PENDEJ@, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+      "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
     renderResults();
   }
 }
@@ -114,7 +114,7 @@ async function removePoint() {
 // AGREGAR NUEVO USUARIO
 function addUserPrompt() {
   if (!isAdmin) return;
-  const name = prompt("Ingrese el nombre del nuevo Ciudadano:");
+  const name = prompt("Ingrese el nombre del nuevo usuario:");
   if (!name) return;
   const exists = data.users.some(u => u.name.toLowerCase() === name.toLowerCase());
   if (exists) {
