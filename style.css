@@ -8,11 +8,13 @@ body {
 input {
   padding: 8px;
   margin: 5px;
+  font-size: 18px;
 }
 
 button {
   padding: 8px 15px;
   margin: 5px;
+  font-size: 18px;
   cursor: pointer;
 }
 
@@ -27,11 +29,20 @@ li:hover {
 
 #errorMsg {
   color: red;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
   margin-top: 15px;
 }
 
 #adminPanel {
   margin-top: 20px;
+}
+
+#result {
+  font-size: 22px;
+  margin: 15px;
+}
+
+#searchBox input::placeholder {
+  font-size: 18px;
 }
