@@ -17,33 +17,38 @@ async function fetchData() {
   const result = await response.json();
   const content = atob(result.content);
   data = JSON.parse(content);
-  renderResults(); // Actualizar pantalla
+  renderResults();
+  renderSuggestions(""); // refresca sugerencias
 }
 
 // Renderizar resultados y panel admin
 function renderResults() {
   const resultDiv = document.getElementById("result");
-
   if (selectedUser) {
     resultDiv.innerText = `${selectedUser.name} tiene ${selectedUser.points} puntos`;
   } else {
     resultDiv.innerText = "";
   }
-
-  // Panel admin visible solo si login exitoso y hay usuario seleccionado
   document.getElementById("adminPanel").style.display =
-    isAdmin && selectedUser ? "block" : "none";
+    isAdmin && selectedUser ? "block" : isAdmin ? "block" : "none";
+
+  // Resaltar el usuario seleccionado en la lista de sugerencias
+  document.querySelectorAll("#suggestions li").forEach(li => {
+    if (selectedUser && li.textContent === selectedUser.name) {
+      li.classList.add("selected");
+    } else {
+      li.classList.remove("selected");
+    }
+  });
 }
 
 // BUSCADOR CON SUGERENCIAS
-function showSuggestions(query) {
+function renderSuggestions(query) {
   const list = document.getElementById("suggestions");
   list.innerHTML = "";
-
   const filtered = data.users.filter(u =>
     u.name.toLowerCase().includes(query.toLowerCase())
   );
-
   filtered.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user.name;
@@ -51,6 +56,10 @@ function showSuggestions(query) {
     list.appendChild(li);
   });
 }
+
+document.getElementById("search").addEventListener("input", e => {
+  renderSuggestions(e.target.value);
+});
 
 // SELECCIONAR USUARIO
 function selectUser(user) {
@@ -71,7 +80,7 @@ function login() {
   } else {
     isAdmin = false;
     document.getElementById("errorMsg").innerText =
-      "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+      "PENDEJ@, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
     renderResults();
   }
 }
@@ -79,9 +88,11 @@ function login() {
 // LOGOUT ADMIN
 function logout() {
   isAdmin = false;
+  selectedUser = null;
   document.getElementById("adminPanel").style.display = "none";
   document.getElementById("adminUser").value = "";
   document.getElementById("adminPass").value = "";
+  renderSuggestions("");
   alert("Sesión cerrada");
 }
 
@@ -100,15 +111,42 @@ async function removePoint() {
   renderResults();
 }
 
+// AGREGAR NUEVO USUARIO
+function addUserPrompt() {
+  if (!isAdmin) return;
+  const name = prompt("Ingrese el nombre del nuevo Ciudadano:");
+  if (!name) return;
+  const exists = data.users.some(u => u.name.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    alert("Este usuario ya existe.");
+    return;
+  }
+  const newUser = { name: name.trim(), points: 0 };
+  data.users.push(newUser);
+  saveData();
+  renderSuggestions("");
+}
+
+// ELIMINAR USUARIO
+function removeUser() {
+  if (!selectedUser || !isAdmin) return;
+  const confirmDel = confirm(`¿Seguro quieres eliminar a ${selectedUser.name}?`);
+  if (!confirmDel) return;
+
+  data.users = data.users.filter(u => u.name !== selectedUser.name);
+  selectedUser = null;
+  saveData();
+  renderSuggestions("");
+  renderResults();
+}
+
 // GUARDAR DATOS EN GITHUB
 async function saveData() {
   const getFile = await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
     { headers: { Authorization: `token ${token}` } }
   );
-
   const file = await getFile.json();
-
   await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
     {
@@ -118,18 +156,13 @@ async function saveData() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: "Actualizar puntos",
+        message: "Actualizar datos",
         content: btoa(JSON.stringify(data, null, 2)),
         sha: file.sha
       })
     }
   );
 }
-
-// EVENTO BUSCADOR
-document.getElementById("search").addEventListener("input", e => {
-  showSuggestions(e.target.value);
-});
 
 // CARGA INICIAL
 fetchData();
