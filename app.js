@@ -5,7 +5,7 @@ const token = "github_pat_11B2F4VHA05elATv9uY7P6_lYOHM8qqwTxPx23uj3q3l34520U5aG5
 
 let data;
 let selectedUser = null;
-let loggedUser = null;
+let isAdmin = false;
 
 async function fetchData() {
   const response = await fetch(
@@ -41,16 +41,43 @@ function selectUser(user) {
   document.getElementById("result").innerText =
     `${user.name} tiene ${user.points} puntos`;
 
-  if (data.admins.includes(loggedUser)) {
+  if (isAdmin) {
     document.getElementById("adminPanel").style.display = "block";
   }
 }
 
-async function updatePoints() {
-  const newPoints = parseInt(document.getElementById("pointsInput").value);
-  selectedUser.points = newPoints;
-  await saveData();
-  alert("Actualizado");
+function login() {
+  const user = document.getElementById("adminUser").value;
+  const pass = document.getElementById("adminPass").value;
+
+  if (user === data.admin.username && pass === data.admin.password) {
+    isAdmin = true;
+    document.getElementById("errorMsg").innerText = "";
+    alert("Administrador logueado");
+  } else {
+    document.getElementById("errorMsg").innerText =
+      "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  document.getElementById("adminPanel").style.display = "none";
+  alert("Sesión cerrada");
+}
+
+function addPoint() {
+  if (!selectedUser) return;
+  selectedUser.points += 1;
+  saveData();
+  selectUser(selectedUser);
+}
+
+function removePoint() {
+  if (!selectedUser) return;
+  selectedUser.points -= 1;
+  saveData();
+  selectUser(selectedUser);
 }
 
 async function saveData() {
@@ -78,13 +105,9 @@ async function saveData() {
   );
 }
 
-function login() {
-  loggedUser = prompt("Ingresa tu usuario GitHub");
-  alert("Logueado como " + loggedUser);
-}
-
 document.getElementById("search").addEventListener("input", e => {
   showSuggestions(e.target.value);
 });
 
 fetchData();
+
