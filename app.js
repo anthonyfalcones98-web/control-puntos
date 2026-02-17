@@ -121,9 +121,9 @@ async function removePoint() { if (!isAdmin || !selectedUser) return; selectedUs
 async function addUser() { if (!isAdmin) return; const name = prompt("Nuevo nombre:"); if (!name) return; users.push({ name: name, points: 0 }); await saveUsers(); alert("Usuario agregado"); }
 async function deleteUser() { if (!isAdmin || !selectedUser) return; if(confirm("¿Seguro que quieres eliminar este nombre?")) { users = users.filter(u => u!==selectedUser); selectedUser=null; document.getElementById("resultBox").classList.add("hidden"); await saveUsers(); alert("Usuario eliminado"); } }
 
-// Clic en mi nombre para abrir Instagram
+// Clic en mi nombre para abrir Instagram correctamente
 document.getElementById("myName").onclick = () => {
-  window.open("https://instagram.com/anthonovsky27", "_blank");
+  window.open("https://www.instagram.com/anthonovsky27/", "_blank");
 };
 
 // Cargar usuarios al iniciar
@@ -131,6 +131,5 @@ loadUsers();
 
 // 🔄 Auto-refresh cada 3 segundos
 setInterval(loadUsers, 3000);
-
 
 
