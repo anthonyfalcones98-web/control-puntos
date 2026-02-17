@@ -44,7 +44,6 @@ function displayUsers() {
     tdName.innerText = u.name;
     tdPoints.innerText = u.points;
 
-    // Seleccionar usuario al hacer click en la fila
     tr.onclick = () => selectUser(u, tr);
 
     tbody.appendChild(tr);
@@ -132,5 +131,6 @@ loadUsers();
 
 // 🔄 Auto-refresh cada 3 segundos
 setInterval(loadUsers, 3000);
+
 
 
