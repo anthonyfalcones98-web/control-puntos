@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Control de Puntos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Lista de Puntos</h1>
+
+<input type="text" id="search" placeholder="Buscar nombre...">
+<ul id="suggestions"></ul>
+
+<div id="result"></div>
+
+<div id="adminPanel" style="display:none;">
+  <h3>Panel Admin</h3>
+  <input type="number" id="pointsInput">
+  <button onclick="updatePoints()">Actualizar puntos</button>
+</div>
+
+<button onclick="login()">Login</button>
+
+<script src="app.js"></script>
+</body>
+</html>
