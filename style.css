@@ -43,14 +43,18 @@ body {
   border: none;
 }
 
-/* Contenedor tabla */
+/* Contenedor tabla siempre visible en primer plano */
 .table-container {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
-  background: rgba(255, 255, 255, 0.1); /* fondo translúcido */
-  border-radius: 8px;
-  padding: 10px;
+  background: rgba(255, 255, 255, 0.9); /* fondo blanco semi-transparente */
+  color: black;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 10;
 }
 
 /* Tabla */
@@ -66,7 +70,7 @@ th, td {
 }
 
 tr:hover {
-  background-color: rgba(47, 111, 178, 0.5);
+  background-color: rgba(47, 111, 178, 0.3);
   cursor: pointer;
 }
 
