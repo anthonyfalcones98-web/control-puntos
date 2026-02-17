@@ -1,8 +1,11 @@
 {
+  "admin": {
+    "username": "Antho98",
+    "password": "1234"
+  },
   "users": [
-    { "name": "Juan Perez", "points": 5 },
-    { "name": "Ana Lopez", "points": 8 },
-    { "name": "Carlos Gomez", "points": 3 },
-    { "name": "Anthony Falcones Alcivar", "points": 10 }
+    { "name": "Carlos", "points": 10 },
+    { "name": "Maria", "points": 25 },
+    { "name": "Juan", "points": 5 }
   ]
 }
