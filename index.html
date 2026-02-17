@@ -2,49 +2,55 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Control de Puntos Dashboard</title>
+<title>Puntichismes</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Control de Puntos</h1>
-
-<!-- Login Admin -->
-<div id="loginBox">
-  <input type="text" id="adminUser" placeholder="Usuario admin">
-  <input type="password" id="adminPass" placeholder="Contraseña">
-  <button onclick="login()">Login Admin</button>
+<div class="topbar">
+  <div class="menu">
+    <span>☰</span>
+    <span>Inicio</span>
+    <span>Chismes</span>
+    <span>Celebridades</span>
+  </div>
+  <button id="loginBtn" onclick="toggleLogin()">Iniciar sesión</button>
 </div>
 
-<div id="errorMsg"></div>
+<div class="header">
+  <img src="header.jpg" alt="Puntichismes">
+</div>
 
-<hr>
+<div id="loginBox" class="loginBox">
+  <input type="text" id="adminUser" placeholder="Usuario admin">
+  <input type="password" id="adminPass" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+  <div id="errorMsg"></div>
+</div>
 
-<!-- Buscador -->
-<div id="searchBox">
+<div class="searchContainer">
   <input type="text" id="search" placeholder="🔍 Buscar nombre...">
 </div>
 
 <table id="usersTable">
   <thead>
-    <tr>
-      <th>Ciudadano/a</th>
+    <tr id="tableHeader">
+      <th>Nombre</th>
       <th>Puntos</th>
-      <th>Acciones</th>
     </tr>
   </thead>
   <tbody></tbody>
 </table>
 
-<!-- Admin Panel -->
 <div id="adminPanel" style="display:none;">
-  <button onclick="addUserPrompt()">➕ Agregar Ciudadano/a</button>
-  <button onclick="logout()">🚪 Desloguearse</button>
+  <button onclick="addUserPrompt()">➕ Agregar usuario</button>
+  <button onclick="logout()">🚪 Cerrar sesión</button>
 </div>
 
-<!-- Créditos -->
-<div id="footer">
-  Desarrollado por <a href="https://instagram.com/anthonovsky27" target="_blank">Anthony Falcones Alcivar</a>
+<div class="footer">
+  Desarrollado por 
+  <strong>Anthony Falcones Alcivar</strong> | 
+  <a href="https://instagram.com/anthonovsky27" target="_blank">@anthonovsky27</a>
 </div>
 
 <script src="app.js"></script>
