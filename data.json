@@ -1,5 +1,8 @@
-[
-  { "name": "Juan Perez", "points": 5 },
-  { "name": "Ana Lopez", "points": 8 },
-  { "name": "Carlos Gomez", "points": 3 },
-]
+{
+  "users": [
+    { "name": "Juan Perez", "points": 5 },
+    { "name": "Ana Lopez", "points": 8 },
+    { "name": "Carlos Gomez", "points": 3 },
+    { "name": "Anthony Falcones Alcivar", "points": 10 }
+  ]
+}
