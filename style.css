@@ -1,0 +1,14 @@
+body {
+  font-family: Arial;
+  max-width: 600px;
+  margin: auto;
+}
+
+li {
+  cursor: pointer;
+  padding: 5px;
+}
+
+li:hover {
+  background: #eee;
+}
