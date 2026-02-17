@@ -57,7 +57,6 @@ body {
   z-index: 10;
 }
 
-/* Tabla */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -125,5 +124,6 @@ tr:hover {
 .hidden {
   display: none;
 }
+
 
 
