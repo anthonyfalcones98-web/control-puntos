@@ -4,8 +4,17 @@
     "password": "1234"
   },
   "users": [
-    { "name": "Carlos", "points": 10 },
-    { "name": "Maria", "points": 25 },
-    { "name": "Juan", "points": 5 }
+    {
+      "name": "Carlos",
+      "points": 11
+    },
+    {
+      "name": "Maria",
+      "points": 25
+    },
+    {
+      "name": "Juan",
+      "points": 5
+    }
   ]
 }
