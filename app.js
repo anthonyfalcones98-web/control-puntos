@@ -1,8 +1,9 @@
-// ------------- CONFIGURACIÓN ----------------
+
+// ---------- CONFIGURACIÓN ----------
 const repoOwner = "anthonyfalcones98-web";
 const repoName = "control-puntos";
 const filePath = "data.json";
-const token = "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";
+const token = "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"; // Pon aquí tu token de GitHub
 
 const ADMIN_USER = "Antho98";
 const ADMIN_PASS = "1234";
@@ -12,13 +13,19 @@ let selectedUser = null;
 let isAdmin = false;
 let fileSHA = null;
 
-// Cargar usuarios desde GitHub
+// ---------- CARGAR USUARIOS ----------
 async function loadUsers() {
   try {
     const response = await fetch(
       `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
       { headers: { Authorization: `token ${token}` } }
     );
+
+    if (!response.ok) {
+      console.error("Error GitHub API:", response.status, response.statusText);
+      return;
+    }
+
     const data = await response.json();
     fileSHA = data.sha;
 
@@ -31,7 +38,7 @@ async function loadUsers() {
   }
 }
 
-// Mostrar usuarios en tabla
+// ---------- MOSTRAR USUARIOS EN TABLA ----------
 function displayUsers() {
   const tbody = document.getElementById("usersBody");
   tbody.innerHTML = "";
@@ -46,12 +53,12 @@ function displayUsers() {
 
     tr.onclick = () => selectUser(u, tr);
 
-    tbody.appendChild(tr);
     tr.appendChild(tdName);
     tr.appendChild(tdPoints);
+    tbody.appendChild(tr);
   });
 
-  // Actualizar puntos si hay usuario seleccionado
+  // Actualizar puntos del usuario seleccionado si aplica
   if (selectedUser) {
     const updatedUser = users.find(u => u.name === selectedUser.name);
     if (updatedUser) {
@@ -61,7 +68,7 @@ function displayUsers() {
   }
 }
 
-// Guardar usuarios en GitHub
+// ---------- GUARDAR USUARIOS EN GITHUB ----------
 async function saveUsers() {
   try {
     const updatedContent = btoa(JSON.stringify(users, null, 2));
@@ -71,7 +78,11 @@ async function saveUsers() {
       {
         method: "PUT",
         headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Actualización automática de puntos", content: updatedContent, sha: fileSHA })
+        body: JSON.stringify({
+          message: "Actualización automática de puntos",
+          content: updatedContent,
+          sha: fileSHA
+        })
       }
     );
 
@@ -81,8 +92,10 @@ async function saveUsers() {
   }
 }
 
-// LOGIN
-function toggleLogin() { document.getElementById("loginPanel").classList.toggle("hidden"); }
+// ---------- LOGIN ----------
+function toggleLogin() {
+  document.getElementById("loginPanel").classList.toggle("hidden");
+}
 
 function login() {
   const user = document.getElementById("adminUser").value;
@@ -104,7 +117,7 @@ function logout() {
   document.getElementById("adminPanel").classList.add("hidden");
 }
 
-// Selección de usuario
+// ---------- SELECCIONAR USUARIO ----------
 function selectUser(user, rowElement) {
   selectedUser = user;
   document.querySelectorAll("#usersBody tr").forEach(r => r.classList.remove("selected"));
@@ -115,19 +128,20 @@ function selectUser(user, rowElement) {
   document.getElementById("resultBox").classList.remove("hidden");
 }
 
-// ACCIONES ADMIN
+// ---------- ACCIONES ADMIN ----------
 async function addPoint() { if (!isAdmin || !selectedUser) return; selectedUser.points++; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
 async function removePoint() { if (!isAdmin || !selectedUser) return; selectedUser.points--; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
 async function addUser() { if (!isAdmin) return; const name = prompt("Nuevo nombre:"); if (!name) return; users.push({ name: name, points: 0 }); await saveUsers(); alert("Usuario agregado"); }
 async function deleteUser() { if (!isAdmin || !selectedUser) return; if(confirm("¿Seguro que quieres eliminar este nombre?")) { users = users.filter(u => u!==selectedUser); selectedUser=null; document.getElementById("resultBox").classList.add("hidden"); await saveUsers(); alert("Usuario eliminado"); } }
 
-// Clic en mi nombre para abrir Instagram correctamente
+// ---------- INSTAGRAM ----------
 document.getElementById("myName").onclick = () => {
   window.open("https://www.instagram.com/anthonovsky27/", "_blank");
 };
 
-// Cargar usuarios al iniciar
+// ---------- INICIALIZAR ----------
 loadUsers();
 
-// 🔄 Auto-refresh cada 3 segundos
+// ---------- REFRESH AUTOMÁTICO CADA 3 SEGUNDOS ----------
 setInterval(loadUsers, 3000);
+
