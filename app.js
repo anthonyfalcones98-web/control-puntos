@@ -58,7 +58,6 @@ function displayUsers() {
     tbody.appendChild(tr);
   });
 
-  // Actualizar puntos del usuario seleccionado si aplica
   if (selectedUser) {
     const updatedUser = users.find(u => u.name === selectedUser.name);
     if (updatedUser) {
@@ -144,4 +143,3 @@ loadUsers();
 
 // ---------- REFRESH AUTOMÁTICO CADA 3 SEGUNDOS ----------
 setInterval(loadUsers, 3000);
-
