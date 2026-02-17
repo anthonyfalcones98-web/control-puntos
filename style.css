@@ -3,6 +3,7 @@ body {
   max-width: 700px;
   margin: auto;
   text-align: center;
+  position: relative;
 }
 
 input {
@@ -27,6 +28,10 @@ li:hover {
   background: #eee;
 }
 
+li.selected {
+  background-color: #b3d9ff;
+}
+
 #errorMsg {
   color: red;
   font-size: 28px;
@@ -41,5 +46,12 @@ li:hover {
 #result {
   font-size: 22px;
   margin: 15px;
+}
+
+#footer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 14px;
 }
 
