@@ -3,7 +3,7 @@
 const repoOwner = "anthonyfalcones98-web";
 const repoName = "control-puntos";
 const filePath = "data.json";
-const token = "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"; // Pon aquí tu token de GitHub
+const token = "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";
 
 const adminUser = "Antho98";
 const adminPass = "1234";
@@ -157,6 +157,3 @@ async function saveData(){
 
 // ------------- INICIAL ----------------
 fetchData();
-
-
-
