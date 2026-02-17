@@ -1,7 +1,19 @@
 body {
   font-family: Arial;
-  max-width: 600px;
+  max-width: 700px;
   margin: auto;
+  text-align: center;
+}
+
+input {
+  padding: 8px;
+  margin: 5px;
+}
+
+button {
+  padding: 8px 15px;
+  margin: 5px;
+  cursor: pointer;
 }
 
 li {
@@ -11,4 +23,15 @@ li {
 
 li:hover {
   background: #eee;
+}
+
+#errorMsg {
+  color: red;
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+#adminPanel {
+  margin-top: 20px;
 }
