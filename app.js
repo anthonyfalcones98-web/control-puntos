@@ -5,128 +5,164 @@ const repoName = "control-puntos";
 const filePath = "data.json";
 const token = "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"; // Pon aquí tu token de GitHub
 
-const ADMIN_USER = "Antho98";
-const ADMIN_PASS = "1234";
+// ------------- CONFIGURACIÓN ----------------
+const repoOwner = "TU_USUARIO";       // Cambia por tu usuario de GitHub
+const repoName = "control-puntos";    // Tu repo
+const filePath = "data.json";
+const token = "TU_TOKEN_AQUI";        // Tu token GitHub
 
-let users = [];
+const adminUser = "Antho98";
+const adminPass = "1234";
+
+let data;
 let selectedUser = null;
 let isAdmin = false;
-let fileSHA = null;
 
-// ---------- CARGAR USUARIOS ----------
-async function loadUsers() {
+// ------------- CARGAR DATOS ----------------
+async function fetchData() {
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-      { headers: { Authorization: `token ${token}` } }
-    );
-
-    if (!response.ok) return console.error("GitHub API error");
-
-    const data = await response.json();
-    fileSHA = data.sha;
-
-    const content = atob(data.content);
-    users = JSON.parse(content).users || [];
-
-    displayUsers();
-  } catch (e) {
-    console.error("Error cargar usuarios:", e);
+    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
+      { headers: { Authorization: `token ${token}` } });
+    const json = await res.json();
+    data = JSON.parse(atob(json.content));
+    renderTable();
+  } catch(e) {
+    console.error("Error cargando datos:", e);
   }
 }
 
-// ---------- MOSTRAR USUARIOS ----------
-function displayUsers(filter = "") {
-  const tbody = document.getElementById("usersBody");
+// ------------- RENDER TABLA ----------------
+function renderTable(query="") {
+  const tbody = document.querySelector("#usersTable tbody");
   tbody.innerHTML = "";
-
-  users
-    .filter(u => u.name.toLowerCase().includes(filter.toLowerCase()))
-    .forEach(u => {
+  data.users
+    .filter(u => u.name.toLowerCase().includes(query.toLowerCase()))
+    .forEach(user => {
       const tr = document.createElement("tr");
-      const tdName = document.createElement("td");
-      const tdPoints = document.createElement("td");
+      tr.classList.toggle("selected", selectedUser && selectedUser.name === user.name);
 
-      tdName.innerText = u.name;
-      tdPoints.innerText = u.points;
+      const nameTd = document.createElement("td");
+      nameTd.textContent = user.name;
+      tr.appendChild(nameTd);
 
-      tr.onclick = () => selectUser(u, tr);
+      const pointsTd = document.createElement("td");
+      pointsTd.textContent = user.points;
+      tr.appendChild(pointsTd);
 
-      tr.appendChild(tdName);
-      tr.appendChild(tdPoints);
+      const actionsTd = document.createElement("td");
+      if(isAdmin) {
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "➕";
+        addBtn.onclick = () => { selectedUser=user; addPoint(); };
+        actionsTd.appendChild(addBtn);
+
+        const subBtn = document.createElement("button");
+        subBtn.textContent = "➖";
+        subBtn.onclick = () => { selectedUser=user; removePoint(); };
+        actionsTd.appendChild(subBtn);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "🗑️";
+        delBtn.onclick = () => { selectedUser=user; removeUser(); };
+        actionsTd.appendChild(delBtn);
+      }
+      tr.appendChild(actionsTd);
+
       tbody.appendChild(tr);
     });
-
-  if (selectedUser) {
-    const updatedUser = users.find(u => u.name === selectedUser.name);
-    if (updatedUser) selectedUser.points = updatedUser.points;
-    document.getElementById("selectedPoints").innerText = selectedUser.points;
-  }
 }
 
-// ---------- GUARDAR EN GITHUB ----------
-async function saveUsers() {
-  try {
-    const updatedContent = btoa(JSON.stringify({ users }, null, 2));
+// ------------- BUSCADOR ----------------
+document.getElementById("search").addEventListener("input", e => {
+  renderTable(e.target.value);
+});
 
-    await fetch(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-      {
-        method: "PUT",
-        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Actualización de puntos", content: updatedContent, sha: fileSHA })
-      }
-    );
-
-    await loadUsers();
-  } catch (e) { console.error("Error guardar:", e); }
-}
-
-// ---------- LOGIN ----------
-function toggleLogin() { document.getElementById("loginPanel").classList.toggle("hidden"); }
-
+// ------------- LOGIN ----------------
 function login() {
-  const user = document.getElementById("adminUser").value;
-  const pass = document.getElementById("adminPass").value;
-  const msg = document.getElementById("loginMessage");
+  const userInput = document.getElementById("adminUser").value.trim();
+  const passInput = document.getElementById("adminPass").value.trim();
 
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+  if(userInput === adminUser && passInput === adminPass){
     isAdmin = true;
-    msg.innerHTML = "Admin loggeado correctamente";
-    document.getElementById("adminPanel").classList.remove("hidden");
-    document.getElementById("loginPanel").classList.add("hidden");
+    document.getElementById("errorMsg").innerText = "";
+    alert("Administrador logueado correctamente");
+    document.getElementById("adminPanel").style.display = "block";
+    renderTable();
   } else {
-    msg.innerHTML = "<span style='color:red;font-size:16px;'>Estas pendejo/a?, el usuario o contraseña ingresados no existen.</span>";
+    isAdmin = false;
+    document.getElementById("errorMsg").innerText = "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+    renderTable();
   }
 }
 
-function logout() { isAdmin = false; document.getElementById("adminPanel").classList.add("hidden"); }
-
-// ---------- SELECCIONAR USUARIO ----------
-function selectUser(user, row) {
-  selectedUser = user;
-  document.querySelectorAll("#usersBody tr").forEach(r => r.classList.remove("selected"));
-  row.classList.add("selected");
-
-  document.getElementById("selectedName").innerText = user.name;
-  document.getElementById("selectedPoints").innerText = user.points;
-  document.getElementById("resultBox").classList.remove("hidden");
+function logout() {
+  isAdmin = false;
+  selectedUser = null;
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("adminUser").value = "";
+  document.getElementById("adminPass").value = "";
+  renderTable();
 }
 
-// ---------- ACCIONES ADMIN ----------
-async function addPoint() { if (!isAdmin || !selectedUser) return; selectedUser.points++; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
-async function removePoint() { if (!isAdmin || !selectedUser) return; selectedUser.points--; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
-async function addUser() { if (!isAdmin) return; const name = prompt("Nuevo nombre:"); if (!name) return; users.push({ name, points: 0 }); await saveUsers(); alert("Usuario agregado"); }
-async function deleteUser() { if (!isAdmin || !selectedUser) return; if(confirm("¿Seguro que quieres eliminar este nombre?")) { users = users.filter(u=>u!==selectedUser); selectedUser=null; document.getElementById("resultBox").classList.add("hidden"); await saveUsers(); alert("Usuario eliminado"); } }
+// ------------- PUNTOS ----------------
+async function addPoint() {
+  if(!selectedUser || !isAdmin) return;
+  selectedUser.points += 1;
+  await saveData();
+  renderTable();
+}
 
-// ---------- INSTAGRAM ----------
-document.getElementById("myName").onclick = () => { window.open("https://www.instagram.com/anthonovsky27/", "_blank"); }
+async function removePoint() {
+  if(!selectedUser || !isAdmin) return;
+  selectedUser.points -= 1;
+  await saveData();
+  renderTable();
+}
 
-// ---------- BUSCADOR ----------
-document.getElementById("searchInput").addEventListener("input", (e) => displayUsers(e.target.value));
+// ------------- USUARIOS ----------------
+function addUserPrompt() {
+  if(!isAdmin) return;
+  const name = prompt("Ingrese el nombre del nuevo usuario:");
+  if(!name) return;
+  if(data.users.some(u => u.name.toLowerCase()===name.toLowerCase())){
+    alert("Este usuario ya existe.");
+    return;
+  }
+  data.users.push({name: name.trim(), points:0});
+  saveData();
+  renderTable();
+}
 
-// ---------- INICIALIZAR ----------
-loadUsers();
-setInterval(loadUsers, 3000);
+function removeUser() {
+  if(!selectedUser || !isAdmin) return;
+  if(!confirm(`¿Seguro quieres eliminar a ${selectedUser.name}?`)) return;
+  data.users = data.users.filter(u=>u.name!==selectedUser.name);
+  selectedUser=null;
+  saveData();
+  renderTable();
+}
+
+// ------------- GUARDAR EN GITHUB ----------------
+async function saveData(){
+  try{
+    const getFile = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
+      { headers: { Authorization: `token ${token}` }});
+    const file = await getFile.json();
+
+    await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      method:"PUT",
+      headers:{ Authorization:`token ${token}`, "Content-Type":"application/json"},
+      body: JSON.stringify({
+        message: "Actualizar datos",
+        content: btoa(JSON.stringify(data,null,2)),
+        sha: file.sha
+      })
+    });
+  } catch(e){ console.error("Error guardando datos:",e);}
+}
+
+// ------------- INICIAL ----------------
+fetchData();
+
 
 
