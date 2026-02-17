@@ -1,3 +1,6 @@
+
+
+// CONFIGURACIÓN
 const repoOwner = "Antho98";
 const repoName = "control-puntos";
 const filePath = "data.json";
@@ -7,19 +10,18 @@ let data;
 let selectedUser = null;
 let isAdmin = false;
 
+// Cargar datos de GitHub
 async function fetchData() {
   const response = await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-    {
-      headers: { Authorization: `token ${token}` }
-    }
+    { headers: { Authorization: `token ${token}` } }
   );
-
   const result = await response.json();
   const content = atob(result.content);
   data = JSON.parse(content);
 }
 
+// BUSCADOR CON SUGERENCIAS
 function showSuggestions(query) {
   const list = document.getElementById("suggestions");
   list.innerHTML = "";
@@ -36,16 +38,19 @@ function showSuggestions(query) {
   });
 }
 
+// SELECCIONAR USUARIO
 function selectUser(user) {
   selectedUser = user;
   document.getElementById("result").innerText =
     `${user.name} tiene ${user.points} puntos`;
 
+  // Mostrar panel admin solo si está loggeado como admin
   if (isAdmin) {
     document.getElementById("adminPanel").style.display = "block";
   }
 }
 
+// LOGIN ADMIN
 function login() {
   const user = document.getElementById("adminUser").value;
   const pass = document.getElementById("adminPass").value;
@@ -53,33 +58,43 @@ function login() {
   if (user === data.admin.username && pass === data.admin.password) {
     isAdmin = true;
     document.getElementById("errorMsg").innerText = "";
-    alert("Administrador logueado");
+    alert("Administrador logueado correctamente");
+
+    // Mostrar panel admin si ya hay usuario seleccionado
+    if (selectedUser) {
+      document.getElementById("adminPanel").style.display = "block";
+    }
   } else {
     document.getElementById("errorMsg").innerText =
       "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
   }
 }
 
+// LOGOUT ADMIN
 function logout() {
   isAdmin = false;
   document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("adminUser").value = "";
+  document.getElementById("adminPass").value = "";
   alert("Sesión cerrada");
 }
 
-function addPoint() {
+// FUNCIONES ADMIN PARA MODIFICAR PUNTOS
+async function addPoint() {
   if (!selectedUser) return;
   selectedUser.points += 1;
-  saveData();
+  await saveData();
   selectUser(selectedUser);
 }
 
-function removePoint() {
+async function removePoint() {
   if (!selectedUser) return;
   selectedUser.points -= 1;
-  saveData();
+  await saveData();
   selectUser(selectedUser);
 }
 
+// GUARDAR DATOS EN GITHUB
 async function saveData() {
   const getFile = await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
@@ -97,7 +112,7 @@ async function saveData() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: "Update points",
+        message: "Actualizar puntos",
         content: btoa(JSON.stringify(data, null, 2)),
         sha: file.sha
       })
@@ -105,9 +120,10 @@ async function saveData() {
   );
 }
 
+// EVENTO BUSCADOR
 document.getElementById("search").addEventListener("input", e => {
   showSuggestions(e.target.value);
 });
 
+// CARGAR DATOS INICIALMENTE
 fetchData();
-
