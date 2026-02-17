@@ -42,7 +42,3 @@ li:hover {
   font-size: 22px;
   margin: 15px;
 }
-
-#searchBox input::placeholder {
-  font-size: 18px;
-}
