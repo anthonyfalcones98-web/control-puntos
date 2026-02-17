@@ -1,9 +1,8 @@
 body {
   font-family: Arial;
-  max-width: 700px;
+  max-width: 900px;
   margin: auto;
   text-align: center;
-  position: relative;
 }
 
 input {
@@ -13,39 +12,32 @@ input {
 }
 
 button {
-  padding: 8px 15px;
-  margin: 5px;
-  font-size: 18px;
+  padding: 5px 10px;
+  margin: 2px;
+  font-size: 16px;
   cursor: pointer;
-}
-
-li {
-  cursor: pointer;
-  padding: 5px;
-}
-
-li:hover {
-  background: #eee;
-}
-
-li.selected {
-  background-color: #b3d9ff;
 }
 
 #errorMsg {
   color: red;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
-#adminPanel {
+#usersTable {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 20px;
 }
 
-#result {
-  font-size: 22px;
-  margin: 15px;
+#usersTable th, #usersTable td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+#usersTable tr.selected {
+  background-color: #b3d9ff;
 }
 
 #footer {
@@ -54,4 +46,5 @@ li.selected {
   right: 10px;
   font-size: 14px;
 }
+
 
