@@ -5,12 +5,6 @@ const repoName = "control-puntos";
 const filePath = "data.json";
 const token = "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"; // Pon aquí tu token de GitHub
 
-// ------------- CONFIGURACIÓN ----------------
-const repoOwner = "TU_USUARIO";       // Cambia por tu usuario de GitHub
-const repoName = "control-puntos";    // Tu repo
-const filePath = "data.json";
-const token = "TU_TOKEN_AQUI";        // Tu token GitHub
-
 const adminUser = "Antho98";
 const adminPass = "1234";
 
