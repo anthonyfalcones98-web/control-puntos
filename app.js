@@ -1,9 +1,8 @@
 // CONFIGURACIÓN
-const repoOwner = "Antho98";
-const repoName = "control-puntos";
+const repoOwner = "anthonyfalcones98-web"; // tu usuario GitHub
+const repoName = "control-puntos"; 
 const filePath = "data.json";
-const token = "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";
-
+const token = "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"; // tu token GitHub
 
 let data;
 let selectedUser = null;
@@ -18,10 +17,10 @@ async function fetchData() {
   const result = await response.json();
   const content = atob(result.content);
   data = JSON.parse(content);
-  renderResults(); // Mostrar datos si hay usuario seleccionado
+  renderResults(); // Actualizar pantalla
 }
 
-// Renderiza resultados y panel admin
+// Renderizar resultados y panel admin
 function renderResults() {
   const resultDiv = document.getElementById("result");
 
@@ -31,7 +30,7 @@ function renderResults() {
     resultDiv.innerText = "";
   }
 
-  // Mostrar panel admin solo si login exitoso y hay usuario seleccionado
+  // Panel admin visible solo si login exitoso y hay usuario seleccionado
   document.getElementById("adminPanel").style.display =
     isAdmin && selectedUser ? "block" : "none";
 }
@@ -68,12 +67,12 @@ function login() {
     isAdmin = true;
     document.getElementById("errorMsg").innerText = "";
     alert("Administrador logueado correctamente");
-    renderResults(); // Actualiza interfaz
+    renderResults();
   } else {
     isAdmin = false;
     document.getElementById("errorMsg").innerText =
       "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
-    renderResults(); // Oculta panel admin si login falla
+    renderResults();
   }
 }
 
@@ -132,5 +131,5 @@ document.getElementById("search").addEventListener("input", e => {
   showSuggestions(e.target.value);
 });
 
-// INICIALIZACIÓN
+// CARGA INICIAL
 fetchData();
