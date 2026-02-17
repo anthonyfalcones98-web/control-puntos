@@ -1,0 +1,8 @@
+{
+  "admins": ["Antho98"],
+  "users": [
+    { "name": "Carlos", "points": 10 },
+    { "name": "Maria", "points": 25 },
+    { "name": "juan", "points": 5 }
+  ]
+}
