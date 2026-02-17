@@ -1,3 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Puntichismes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="header.jpeg" alt="Puntichismes">
+  <button class="login-btn" onclick="toggleLogin()">Iniciar sesión</button>
+</div>
+
+<!-- LOGIN PANEL -->
+<div id="loginPanel" class="login-panel hidden">
+  <input type="text" id="adminUser" placeholder="Usuario admin">
+  <input type="password" id="adminPass" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+  <div id="loginMessage"></div>
+</div>
+
+<!-- TABLA CON USUARIOS -->
 <div class="table-container">
   <input type="text" id="searchInput" placeholder="Buscar nombre...">
   <table>
@@ -8,18 +32,32 @@
       </tr>
     </thead>
     <tbody id="usersBody">
-      <!-- Usuarios cargados aquí -->
+      <!-- Usuarios se cargan aquí -->
     </tbody>
   </table>
 </div>
 
-<!-- Nombre clickeable -->
-<div class="footer">
-  <span id="myName">Anthony Falcones Alcivar</span>
-</div>
-
-<!-- Result box admin -->
+<!-- RESULT BOX ADMIN -->
 <div id="resultBox" class="result-box hidden">
   <h2 id="selectedName"></h2>
   <p>Puntos: <span id="selectedPoints"></span></p>
 </div>
+
+<!-- PANEL ADMIN -->
+<div id="adminPanel" class="admin-panel hidden">
+  <h3>Acciones</h3>
+  <button onclick="addPoint()">➕ Sumar 1 punto</button>
+  <button onclick="removePoint()">➖ Quitar 1 punto</button>
+  <button onclick="addUser()">➕ Agregar Ciudadano/a</button>
+  <button onclick="deleteUser()">🗑 Eliminar Ciudadano</button>
+  <button onclick="logout()">Cerrar sesión</button>
+</div>
+
+<!-- NOMBRE CLICKEABLE -->
+<div class="footer">
+  <span id="myName">Anthony Falcones Alcivar</span>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
