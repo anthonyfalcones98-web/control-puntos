@@ -1,168 +1,159 @@
-// CONFIGURACIÓN
-const repoOwner = "anthonyfalcones98-web"; // tu usuario GitHubconst repoName = "control-puntos"; const repoName = "control-puntos";
-const filePath = "data.json";
-const token = "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"; // token GitHub
 
+// ------------- CONFIGURACIÓN ----------------
+const repoOwner = "anthonyfalcones98-web";       // Cambia por tu usuario de GitHub
+const repoName = "control-puntos";    // Tu repo
+const filePath = "data.json";
+const token = "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";    // token GitHub
+
+const adminUser = "Antho98";
+const adminPass = "1234";
 
 let data;
 let selectedUser = null;
 let isAdmin = false;
 
-// Cargar datos desde GitHub
+// ------------- CARGAR DATOS ----------------
 async function fetchData() {
-  const response = await fetch(
-    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-    { headers: { Authorization: `token ${token}` } }
-  );
-  const result = await response.json();
-  const content = atob(result.content);
-  data = JSON.parse(content);
-  renderResults();
-  renderSuggestions(""); // refresca sugerencias
-}
-
-// Renderizar resultados y panel admin
-function renderResults() {
-  const resultDiv = document.getElementById("result");
-  if (selectedUser) {
-    resultDiv.innerText = `${selectedUser.name} tiene ${selectedUser.points} puntos`;
-  } else {
-    resultDiv.innerText = "";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
+      { headers: { Authorization: `token ${token}` } });
+    const json = await res.json();
+    data = JSON.parse(atob(json.content));
+    renderTable();
+  } catch(e) {
+    console.error("Error cargando datos:", e);
   }
-  document.getElementById("adminPanel").style.display =
-    isAdmin && selectedUser ? "block" : isAdmin ? "block" : "none";
-
-  // Resaltar el usuario seleccionado en la lista de sugerencias
-  document.querySelectorAll("#suggestions li").forEach(li => {
-    if (selectedUser && li.textContent === selectedUser.name) {
-      li.classList.add("selected");
-    } else {
-      li.classList.remove("selected");
-    }
-  });
 }
 
-// BUSCADOR CON SUGERENCIAS
-function renderSuggestions(query) {
-  const list = document.getElementById("suggestions");
-  list.innerHTML = "";
-  const filtered = data.users.filter(u =>
-    u.name.toLowerCase().includes(query.toLowerCase())
-  );
-  filtered.forEach(user => {
-    const li = document.createElement("li");
-    li.textContent = user.name;
-    li.onclick = () => selectUser(user);
-    list.appendChild(li);
-  });
+// ------------- RENDER TABLA ----------------
+function renderTable(query="") {
+  const tbody = document.querySelector("#usersTable tbody");
+  tbody.innerHTML = "";
+  data.users
+    .filter(u => u.name.toLowerCase().includes(query.toLowerCase()))
+    .forEach(user => {
+      const tr = document.createElement("tr");
+      tr.classList.toggle("selected", selectedUser && selectedUser.name === user.name);
+
+      const nameTd = document.createElement("td");
+      nameTd.textContent = user.name;
+      tr.appendChild(nameTd);
+
+      const pointsTd = document.createElement("td");
+      pointsTd.textContent = user.points;
+      tr.appendChild(pointsTd);
+
+      const actionsTd = document.createElement("td");
+      if(isAdmin) {
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "➕";
+        addBtn.onclick = () => { selectedUser=user; addPoint(); };
+        actionsTd.appendChild(addBtn);
+
+        const subBtn = document.createElement("button");
+        subBtn.textContent = "➖";
+        subBtn.onclick = () => { selectedUser=user; removePoint(); };
+        actionsTd.appendChild(subBtn);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "🗑️";
+        delBtn.onclick = () => { selectedUser=user; removeUser(); };
+        actionsTd.appendChild(delBtn);
+      }
+      tr.appendChild(actionsTd);
+
+      tbody.appendChild(tr);
+    });
 }
 
+// ------------- BUSCADOR ----------------
 document.getElementById("search").addEventListener("input", e => {
-  renderSuggestions(e.target.value);
+  renderTable(e.target.value);
 });
 
-// SELECCIONAR USUARIO
-function selectUser(user) {
-  selectedUser = user;
-  renderResults();
-}
-
-// LOGIN ADMIN
+// ------------- LOGIN ----------------
 function login() {
   const userInput = document.getElementById("adminUser").value.trim();
   const passInput = document.getElementById("adminPass").value.trim();
 
-  if (userInput === data.admin.username && passInput === data.admin.password) {
+  if(userInput === adminUser && passInput === adminPass){
     isAdmin = true;
     document.getElementById("errorMsg").innerText = "";
     alert("Administrador logueado correctamente");
-    renderResults();
+    document.getElementById("adminPanel").style.display = "block";
+    renderTable();
   } else {
     isAdmin = false;
-    document.getElementById("errorMsg").innerText =
-      "PENDEJO/A, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
-    renderResults();
+    document.getElementById("errorMsg").innerText = "PENDEJO/A, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+    renderTable();
   }
 }
 
-// LOGOUT ADMIN
 function logout() {
   isAdmin = false;
   selectedUser = null;
   document.getElementById("adminPanel").style.display = "none";
   document.getElementById("adminUser").value = "";
   document.getElementById("adminPass").value = "";
-  renderSuggestions("");
-  alert("Sesión cerrada");
+  renderTable();
 }
 
-// FUNCIONES ADMIN PARA MODIFICAR PUNTOS
+// ------------- PUNTOS ----------------
 async function addPoint() {
-  if (!selectedUser || !isAdmin) return;
+  if(!selectedUser || !isAdmin) return;
   selectedUser.points += 1;
   await saveData();
-  renderResults();
+  renderTable();
 }
 
 async function removePoint() {
-  if (!selectedUser || !isAdmin) return;
+  if(!selectedUser || !isAdmin) return;
   selectedUser.points -= 1;
   await saveData();
-  renderResults();
+  renderTable();
 }
 
-// AGREGAR NUEVO USUARIO
+// ------------- Ciudadanos ----------------
 function addUserPrompt() {
-  if (!isAdmin) return;
+  if(!isAdmin) return;
   const name = prompt("Ingrese el nombre del/la nuevo/a Ciudadano/a:");
-  if (!name) return;
-  const exists = data.users.some(u => u.name.toLowerCase() === name.toLowerCase());
-  if (exists) {
+  if(!name) return;
+  if(data.users.some(u => u.name.toLowerCase()===name.toLowerCase())){
     alert("Este usuario ya existe.");
     return;
   }
-  const newUser = { name: name.trim(), points: 0 };
-  data.users.push(newUser);
+  data.users.push({name: name.trim(), points:0});
   saveData();
-  renderSuggestions("");
+  renderTable();
 }
 
-// ELIMINAR USUARIO
 function removeUser() {
-  if (!selectedUser || !isAdmin) return;
-  const confirmDel = confirm(`¿Seguro quieres eliminar a ${selectedUser.name}?`);
-  if (!confirmDel) return;
-
-  data.users = data.users.filter(u => u.name !== selectedUser.name);
-  selectedUser = null;
+  if(!selectedUser || !isAdmin) return;
+  if(!confirm(`¿Seguro quieres eliminar a ${selectedUser.name}?`)) return;
+  data.users = data.users.filter(u=>u.name!==selectedUser.name);
+  selectedUser=null;
   saveData();
-  renderSuggestions("");
-  renderResults();
+  renderTable();
 }
 
-// GUARDAR DATOS EN GITHUB
-async function saveData() {
-  const getFile = await fetch(
-    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-    { headers: { Authorization: `token ${token}` } }
-  );
-  const file = await getFile.json();
-  await fetch(
-    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `token ${token}`,
-        "Content-Type": "application/json"
-      },
+// ------------- GUARDAR EN GITHUB ----------------
+async function saveData(){
+  try{
+    const getFile = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
+      { headers: { Authorization: `token ${token}` }});
+    const file = await getFile.json();
+
+    await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      method:"PUT",
+      headers:{ Authorization:`token ${token}`, "Content-Type":"application/json"},
       body: JSON.stringify({
         message: "Actualizar datos",
-        content: btoa(JSON.stringify(data, null, 2)),
+        content: btoa(JSON.stringify(data,null,2)),
         sha: file.sha
       })
-    }
-  );
+    });
+  } catch(e){ console.error("Error guardando datos:",e);}
 }
 
-// CARGA INICIAL
+// ------------- INICIAL ----------------
 fetchData();
