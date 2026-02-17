@@ -80,7 +80,7 @@ function login() {
   } else {
     isAdmin = false;
     document.getElementById("errorMsg").innerText =
-      "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
+      "PENDEJO/A, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
     renderResults();
   }
 }
@@ -114,7 +114,7 @@ async function removePoint() {
 // AGREGAR NUEVO USUARIO
 function addUserPrompt() {
   if (!isAdmin) return;
-  const name = prompt("Ingrese el nombre del nuevo usuario:");
+  const name = prompt("Ingrese el nombre del/la nuevo/a Ciudadano/a:");
   if (!name) return;
   const exists = data.users.some(u => u.name.toLowerCase() === name.toLowerCase());
   if (exists) {
