@@ -131,5 +131,3 @@ loadUsers();
 
 // 🔄 Auto-refresh cada 3 segundos
 setInterval(loadUsers, 3000);
-
-
