@@ -2,62 +2,52 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Puntichismes</title>
+<title>Control de Puntos Dashboard</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <img src="header.jpeg" alt="Puntichismes">
-  <button class="login-btn" onclick="toggleLogin()">Iniciar sesión</button>
-</div>
+<h1>Control de Puntos</h1>
 
-<!-- LOGIN PANEL -->
-<div id="loginPanel" class="login-panel hidden">
+<!-- Login Admin -->
+<div id="loginBox">
   <input type="text" id="adminUser" placeholder="Usuario admin">
   <input type="password" id="adminPass" placeholder="Contraseña">
-  <button onclick="login()">Entrar</button>
-  <div id="loginMessage"></div>
+  <button onclick="login()">Login Admin</button>
 </div>
 
-<!-- TABLA CON USUARIOS -->
-<div class="table-container">
-  <input type="text" id="searchInput" placeholder="Buscar nombre...">
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Puntos</th>
-      </tr>
-    </thead>
-    <tbody id="usersBody">
-      <!-- Usuarios se cargan aquí desde app.js -->
-    </tbody>
-  </table>
+<div id="errorMsg"></div>
+
+<hr>
+
+<!-- Buscador -->
+<div id="searchBox">
+  <input type="text" id="search" placeholder="🔍 Buscar nombre...">
 </div>
 
-<!-- RESULT BOX ADMIN -->
-<div id="resultBox" class="result-box hidden">
-  <h2 id="selectedName"></h2>
-  <p>Puntos: <span id="selectedPoints"></span></p>
+<table id="usersTable">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Puntos</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- Admin Panel -->
+<div id="adminPanel" style="display:none;">
+  <button onclick="addUserPrompt()">➕ Agregar usuario</button>
+  <button onclick="logout()">🚪 Desloguearse</button>
 </div>
 
-<!-- PANEL ADMIN -->
-<div id="adminPanel" class="admin-panel hidden">
-  <h3>Acciones</h3>
-  <button onclick="addPoint()">➕ Sumar 1 punto</button>
-  <button onclick="removePoint()">➖ Quitar 1 punto</button>
-  <button onclick="addUser()">➕ Agregar Ciudadano/a</button>
-  <button onclick="deleteUser()">🗑 Eliminar Ciudadano</button>
-  <button onclick="logout()">Cerrar sesión</button>
-</div>
-
-<!-- NOMBRE CLICKEABLE -->
-<div class="footer">
-  <span id="myName">Anthony Falcones Alcivar</span>
+<!-- Créditos -->
+<div id="footer">
+  Desarrollado por <a href="https://instagram.com/anthonovsky27" target="_blank">Anthony Falcones Alcivar</a>
 </div>
 
 <script src="app.js"></script>
 </body>
 </html>
+
