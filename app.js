@@ -1,9 +1,9 @@
 
 // ------------- CONFIGURACIÓN ----------------
-const repoOwner = "anthonyfalcones98-web";       // Cambia por tu usuario de GitHub
-const repoName = "control-puntos";    // Tu repo
+const repoOwner = "anthonyfalcones98-web";
+const repoName = "control-puntos";
 const filePath = "data.json";
-const token = "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";    // token GitHub
+const token = "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";
 
 const ADMIN_USER = "Antho98";
 const ADMIN_PASS = "1234";
@@ -13,12 +13,13 @@ let selectedUser = null;
 let isAdmin = false;
 let fileSHA = null;
 
+// Cargar usuarios desde GitHub
 async function loadUsers() {
   const response = await fetch(
-    `https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`,
+    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
     {
       headers: {
-        Authorization: `token ${TOKEN}`
+        Authorization: `token ${token}`
       }
     }
   );
@@ -28,17 +29,33 @@ async function loadUsers() {
 
   const content = atob(data.content);
   users = JSON.parse(content);
+
+  displayUsers();
 }
 
+// Mostrar usuarios en tiempo real
+function displayUsers() {
+  const suggestions = document.getElementById("suggestions");
+  suggestions.innerHTML = "";
+
+  users.forEach(u => {
+    const div = document.createElement("div");
+    div.innerText = u.name + " - " + u.points + " puntos";
+    div.onclick = () => selectUser(u, div);
+    suggestions.appendChild(div);
+  });
+}
+
+// Guardar usuarios en GitHub
 async function saveUsers() {
   const updatedContent = btoa(JSON.stringify(users, null, 2));
 
   await fetch(
-    `https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`,
+    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
     {
       method: "PUT",
       headers: {
-        Authorization: `token ${TOKEN}`,
+        Authorization: `token ${token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -52,6 +69,7 @@ async function saveUsers() {
   await loadUsers();
 }
 
+// LOGIN
 function toggleLogin() {
   document.getElementById("loginPanel").classList.toggle("hidden");
 }
@@ -65,8 +83,9 @@ function login() {
     isAdmin = true;
     msg.innerHTML = "Admin loggeado correctamente";
     document.getElementById("adminPanel").classList.remove("hidden");
+    document.getElementById("loginPanel").classList.add("hidden");
   } else {
-    msg.innerHTML = "<span style='color:red;font-size:18px;'>pendejo, escribe bien que ese usuario o contraseña no existe.</span>";
+    msg.innerHTML = "<span style='color:red;font-size:16px;'>Estas pendejo/a?, el usuario o contraseña ingresados no existen.</span>";
   }
 }
 
@@ -75,6 +94,7 @@ function logout() {
   document.getElementById("adminPanel").classList.add("hidden");
 }
 
+// BÚSQUEDA
 function searchUser() {
   const input = document.getElementById("searchInput").value.toLowerCase();
   const suggestions = document.getElementById("suggestions");
@@ -84,12 +104,13 @@ function searchUser() {
     .filter(u => u.name.toLowerCase().includes(input))
     .forEach(u => {
       const div = document.createElement("div");
-      div.innerText = u.name;
+      div.innerText = u.name + " - " + u.points + " puntos";
       div.onclick = () => selectUser(u, div);
       suggestions.appendChild(div);
     });
 }
 
+// Selección de usuario
 function selectUser(user, element) {
   selectedUser = user;
   document.querySelectorAll("#suggestions div").forEach(d => d.classList.remove("selected"));
@@ -100,6 +121,7 @@ function selectUser(user, element) {
   document.getElementById("resultBox").classList.remove("hidden");
 }
 
+// ACCIONES ADMIN
 async function addPoint() {
   if (!isAdmin || !selectedUser) return;
   selectedUser.points++;
@@ -135,4 +157,6 @@ async function deleteUser() {
   }
 }
 
+// Cargar usuarios al iniciar
 loadUsers();
+
