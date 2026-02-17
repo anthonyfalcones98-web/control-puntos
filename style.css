@@ -1,10 +1,12 @@
+/* Fondo general basado en la imagen header */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #0e2a47;
+  background-color: #0e2a47; /* azul oscuro como fondo principal */
   color: white;
 }
 
+/* HEADER */
 .header {
   position: relative;
   text-align: center;
@@ -12,7 +14,7 @@ body {
 
 .header img {
   width: 100%;
-  height: auto;
+  height: 200px; /* ajustable según tu imagen */
   object-fit: cover;
 }
 
@@ -34,6 +36,10 @@ body {
 .login-panel {
   text-align: center;
   padding: 15px;
+  background: rgba(0,0,0,0.6);
+  width: 250px;
+  margin: 20px auto;
+  border-radius: 10px;
 }
 
 .login-panel input {
@@ -43,7 +49,7 @@ body {
   border: none;
 }
 
-/* Contenedor tabla siempre visible en primer plano */
+/* Contenedor tabla */
 .table-container {
   width: 90%;
   max-width: 600px;
@@ -53,8 +59,6 @@ body {
   border-radius: 12px;
   padding: 15px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  position: relative;
-  z-index: 10;
 }
 
 table {
@@ -99,7 +103,7 @@ tr:hover {
   background-color: #2f6fb2 !important;
 }
 
-/* Footer */
+/* Footer clickeable */
 .footer {
   position: fixed;
   bottom: 10px;
@@ -121,6 +125,7 @@ tr:hover {
   background-color: #2f6fb2;
 }
 
+/* Ocultar elementos */
 .hidden {
   display: none;
 }
