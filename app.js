@@ -30,7 +30,8 @@ async function loadUsers() {
     fileSHA = data.sha;
 
     const content = atob(data.content);
-    users = JSON.parse(content);
+    const parsed = JSON.parse(content);
+    users = parsed.users || [];
 
     displayUsers();
   } catch (error) {
@@ -39,25 +40,28 @@ async function loadUsers() {
 }
 
 // ---------- MOSTRAR USUARIOS EN TABLA ----------
-function displayUsers() {
+function displayUsers(filter = "") {
   const tbody = document.getElementById("usersBody");
   tbody.innerHTML = "";
 
-  users.forEach(u => {
-    const tr = document.createElement("tr");
-    const tdName = document.createElement("td");
-    const tdPoints = document.createElement("td");
+  users
+    .filter(u => u.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(u => {
+      const tr = document.createElement("tr");
+      const tdName = document.createElement("td");
+      const tdPoints = document.createElement("td");
 
-    tdName.innerText = u.name;
-    tdPoints.innerText = u.points;
+      tdName.innerText = u.name;
+      tdPoints.innerText = u.points;
 
-    tr.onclick = () => selectUser(u, tr);
+      tr.onclick = () => selectUser(u, tr);
 
-    tr.appendChild(tdName);
-    tr.appendChild(tdPoints);
-    tbody.appendChild(tr);
-  });
+      tr.appendChild(tdName);
+      tr.appendChild(tdPoints);
+      tbody.appendChild(tr);
+    });
 
+  // Actualiza puntos si hay usuario seleccionado
   if (selectedUser) {
     const updatedUser = users.find(u => u.name === selectedUser.name);
     if (updatedUser) {
@@ -70,7 +74,7 @@ function displayUsers() {
 // ---------- GUARDAR USUARIOS EN GITHUB ----------
 async function saveUsers() {
   try {
-    const updatedContent = btoa(JSON.stringify(users, null, 2));
+    const updatedContent = btoa(JSON.stringify({ users }, null, 2));
 
     await fetch(
       `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
@@ -128,18 +132,53 @@ function selectUser(user, rowElement) {
 }
 
 // ---------- ACCIONES ADMIN ----------
-async function addPoint() { if (!isAdmin || !selectedUser) return; selectedUser.points++; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
-async function removePoint() { if (!isAdmin || !selectedUser) return; selectedUser.points--; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
-async function addUser() { if (!isAdmin) return; const name = prompt("Nuevo nombre:"); if (!name) return; users.push({ name: name, points: 0 }); await saveUsers(); alert("Usuario agregado"); }
-async function deleteUser() { if (!isAdmin || !selectedUser) return; if(confirm("¿Seguro que quieres eliminar este nombre?")) { users = users.filter(u => u!==selectedUser); selectedUser=null; document.getElementById("resultBox").classList.add("hidden"); await saveUsers(); alert("Usuario eliminado"); } }
+async function addPoint() {
+  if (!isAdmin || !selectedUser) return;
+  selectedUser.points++;
+  document.getElementById("selectedPoints").innerText = selectedUser.points;
+  await saveUsers();
+}
+
+async function removePoint() {
+  if (!isAdmin || !selectedUser) return;
+  selectedUser.points--;
+  document.getElementById("selectedPoints").innerText = selectedUser.points;
+  await saveUsers();
+}
+
+async function addUser() {
+  if (!isAdmin) return;
+  const name = prompt("Nuevo nombre:");
+  if (!name) return;
+  users.push({ name: name, points: 0 });
+  await saveUsers();
+  alert("Usuario agregado");
+}
+
+async function deleteUser() {
+  if (!isAdmin || !selectedUser) return;
+  if (confirm("¿Seguro que quieres eliminar este nombre?")) {
+    users = users.filter(u => u !== selectedUser);
+    selectedUser = null;
+    document.getElementById("resultBox").classList.add("hidden");
+    await saveUsers();
+    alert("Usuario eliminado");
+  }
+}
 
 // ---------- INSTAGRAM ----------
 document.getElementById("myName").onclick = () => {
   window.open("https://www.instagram.com/anthonovsky27/", "_blank");
 };
 
+// ---------- BUSCADOR EN TIEMPO REAL ----------
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  displayUsers(e.target.value);
+});
+
 // ---------- INICIALIZAR ----------
 loadUsers();
 
 // ---------- REFRESH AUTOMÁTICO CADA 3 SEGUNDOS ----------
 setInterval(loadUsers, 3000);
+
