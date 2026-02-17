@@ -21,25 +21,21 @@ async function loadUsers() {
       { headers: { Authorization: `token ${token}` } }
     );
 
-    if (!response.ok) {
-      console.error("Error GitHub API:", response.status, response.statusText);
-      return;
-    }
+    if (!response.ok) return console.error("GitHub API error");
 
     const data = await response.json();
     fileSHA = data.sha;
 
     const content = atob(data.content);
-    const parsed = JSON.parse(content);
-    users = parsed.users || [];
+    users = JSON.parse(content).users || [];
 
     displayUsers();
-  } catch (error) {
-    console.error("Error al cargar usuarios:", error);
+  } catch (e) {
+    console.error("Error cargar usuarios:", e);
   }
 }
 
-// ---------- MOSTRAR USUARIOS EN TABLA ----------
+// ---------- MOSTRAR USUARIOS ----------
 function displayUsers(filter = "") {
   const tbody = document.getElementById("usersBody");
   tbody.innerHTML = "";
@@ -61,17 +57,14 @@ function displayUsers(filter = "") {
       tbody.appendChild(tr);
     });
 
-  // Actualiza puntos si hay usuario seleccionado
   if (selectedUser) {
     const updatedUser = users.find(u => u.name === selectedUser.name);
-    if (updatedUser) {
-      selectedUser.points = updatedUser.points;
-      document.getElementById("selectedPoints").innerText = selectedUser.points;
-    }
+    if (updatedUser) selectedUser.points = updatedUser.points;
+    document.getElementById("selectedPoints").innerText = selectedUser.points;
   }
 }
 
-// ---------- GUARDAR USUARIOS EN GITHUB ----------
+// ---------- GUARDAR EN GITHUB ----------
 async function saveUsers() {
   try {
     const updatedContent = btoa(JSON.stringify({ users }, null, 2));
@@ -81,24 +74,16 @@ async function saveUsers() {
       {
         method: "PUT",
         headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: "Actualización automática de puntos",
-          content: updatedContent,
-          sha: fileSHA
-        })
+        body: JSON.stringify({ message: "Actualización de puntos", content: updatedContent, sha: fileSHA })
       }
     );
 
     await loadUsers();
-  } catch (error) {
-    console.error("Error al guardar usuarios:", error);
-  }
+  } catch (e) { console.error("Error guardar:", e); }
 }
 
 // ---------- LOGIN ----------
-function toggleLogin() {
-  document.getElementById("loginPanel").classList.toggle("hidden");
-}
+function toggleLogin() { document.getElementById("loginPanel").classList.toggle("hidden"); }
 
 function login() {
   const user = document.getElementById("adminUser").value;
@@ -115,16 +100,13 @@ function login() {
   }
 }
 
-function logout() {
-  isAdmin = false;
-  document.getElementById("adminPanel").classList.add("hidden");
-}
+function logout() { isAdmin = false; document.getElementById("adminPanel").classList.add("hidden"); }
 
 // ---------- SELECCIONAR USUARIO ----------
-function selectUser(user, rowElement) {
+function selectUser(user, row) {
   selectedUser = user;
   document.querySelectorAll("#usersBody tr").forEach(r => r.classList.remove("selected"));
-  rowElement.classList.add("selected");
+  row.classList.add("selected");
 
   document.getElementById("selectedName").innerText = user.name;
   document.getElementById("selectedPoints").innerText = user.points;
@@ -132,53 +114,19 @@ function selectUser(user, rowElement) {
 }
 
 // ---------- ACCIONES ADMIN ----------
-async function addPoint() {
-  if (!isAdmin || !selectedUser) return;
-  selectedUser.points++;
-  document.getElementById("selectedPoints").innerText = selectedUser.points;
-  await saveUsers();
-}
-
-async function removePoint() {
-  if (!isAdmin || !selectedUser) return;
-  selectedUser.points--;
-  document.getElementById("selectedPoints").innerText = selectedUser.points;
-  await saveUsers();
-}
-
-async function addUser() {
-  if (!isAdmin) return;
-  const name = prompt("Nuevo nombre:");
-  if (!name) return;
-  users.push({ name: name, points: 0 });
-  await saveUsers();
-  alert("Usuario agregado");
-}
-
-async function deleteUser() {
-  if (!isAdmin || !selectedUser) return;
-  if (confirm("¿Seguro que quieres eliminar este nombre?")) {
-    users = users.filter(u => u !== selectedUser);
-    selectedUser = null;
-    document.getElementById("resultBox").classList.add("hidden");
-    await saveUsers();
-    alert("Usuario eliminado");
-  }
-}
+async function addPoint() { if (!isAdmin || !selectedUser) return; selectedUser.points++; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
+async function removePoint() { if (!isAdmin || !selectedUser) return; selectedUser.points--; document.getElementById("selectedPoints").innerText = selectedUser.points; await saveUsers(); }
+async function addUser() { if (!isAdmin) return; const name = prompt("Nuevo nombre:"); if (!name) return; users.push({ name, points: 0 }); await saveUsers(); alert("Usuario agregado"); }
+async function deleteUser() { if (!isAdmin || !selectedUser) return; if(confirm("¿Seguro que quieres eliminar este nombre?")) { users = users.filter(u=>u!==selectedUser); selectedUser=null; document.getElementById("resultBox").classList.add("hidden"); await saveUsers(); alert("Usuario eliminado"); } }
 
 // ---------- INSTAGRAM ----------
-document.getElementById("myName").onclick = () => {
-  window.open("https://www.instagram.com/anthonovsky27/", "_blank");
-};
+document.getElementById("myName").onclick = () => { window.open("https://www.instagram.com/anthonovsky27/", "_blank"); }
 
-// ---------- BUSCADOR EN TIEMPO REAL ----------
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  displayUsers(e.target.value);
-});
+// ---------- BUSCADOR ----------
+document.getElementById("searchInput").addEventListener("input", (e) => displayUsers(e.target.value));
 
 // ---------- INICIALIZAR ----------
 loadUsers();
-
-// ---------- REFRESH AUTOMÁTICO CADA 3 SEGUNDOS ----------
 setInterval(loadUsers, 3000);
+
 
