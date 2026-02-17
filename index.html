@@ -2,161 +2,55 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Puntichismes</title>
-
-<style>
-body{
-    margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
-}
-
-/* HEADER CON IMAGEN */
-.header{
-    position:relative;
-    width:100%;
-    height:250px;
-    overflow:hidden;
-}
-
-.header img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    filter:brightness(0.6);
-}
-
-/* BOTON LOGIN */
-.login-top{
-    position:absolute;
-    top:20px;
-    right:20px;
-}
-
-.login-top button{
-    padding:10px 18px;
-    background:#ff00aa;
-    color:white;
-    border:none;
-    border-radius:20px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-/* CONTENIDO */
-.container{
-    max-width:900px;
-    margin:40px auto;
-    padding:20px;
-}
-
-.card{
-    background:rgba(255,255,255,0.05);
-    padding:25px;
-    border-radius:15px;
-    margin-bottom:25px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.4);
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    border:none;
-    border-radius:8px;
-}
-
-/* BOTONES */
-.btn{
-    padding:10px 15px;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.btn-primary{
-    background:#00c6ff;
-    color:black;
-}
-
-.btn-danger{
-    background:#ff4d4d;
-    color:white;
-}
-
-/* LOGIN BOX */
-#loginBox{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:#1e2a38;
-    padding:30px;
-    border-radius:15px;
-    width:300px;
-    display:none;
-    box-shadow:0 5px 30px rgba(0,0,0,0.6);
-}
-
-/* PANEL ADMIN */
-#adminPanel{
-    display:none;
-}
-
-/* FOOTER */
-footer{
-    text-align:center;
-    padding:20px;
-    opacity:0.8;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-    <img src="header.jpeg" alt="Header">
-    <div class="login-top">
-        <button onclick="toggleLogin()">Iniciar sesión</button>
-    </div>
+  <img src="header.jpeg" alt="Puntichismes">
+  <button class="login-btn" onclick="toggleLogin()">Iniciar sesión</button>
 </div>
 
-<div class="container">
-
-    <!-- BUSCADOR -->
-    <div class="card">
-        <h2>Buscar Usuario</h2>
-        <input type="text" id="searchName" placeholder="Escribe un nombre...">
-        <button class="btn btn-primary" onclick="buscar()">🔍 Buscar</button>
-        <p id="resultado"></p>
-    </div>
-
-    <!-- PANEL ADMIN -->
-    <div id="adminPanel" class="card">
-        <h2>Acciones Administrador</h2>
-
-        <input type="text" id="adminTarget" placeholder="Nombre del usuario">
-        <button class="btn btn-primary" onclick="sumar()">+1 Punto</button>
-        <button class="btn btn-danger" onclick="restar()">-1 Punto</button>
-
-        <br><br>
-
-        <input type="text" id="newName" placeholder="Nuevo nombre">
-        <button class="btn btn-primary" onclick="agregar()">Agregar Nombre</button>
-        <button class="btn btn-danger" onclick="eliminar()">Eliminar Nombre</button>
-
-        <br><br>
-
-        <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
-    </div>
-
+<!-- LOGIN PANEL -->
+<div id="loginPanel" class="login-panel hidden">
+  <input type="text" id="adminUser" placeholder="Usuario admin">
+  <input type="password" id="adminPass" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+  <div id="loginMessage"></div>
 </div>
 
-<footer>
-Desarrollado por Anthony Falcones
+<!-- BUSCADOR -->
+<div class="search-section">
+  <input type="text" id="searchInput" placeholder="Buscar nombre..." oninput="searchUser()">
+  <div id="suggestions"></div>
+</div>
 
+<!-- RESULTADO -->
+<div id="resultBox" class="result-box hidden">
+  <h2 id="selectedName"></h2>
+  <p>Puntos: <span id="selectedPoints"></span></p>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="adminPanel" class="admin-panel hidden">
+  <h3>Acciones</h3>
+  <button onclick="addPoint()">➕ Sumar 1 punto</button>
+  <button onclick="removePoint()">➖ Quitar 1 punto</button>
+  <button onclick="addUser()">➕ Agregar nombre</button>
+  <button onclick="deleteUser()">🗑 Eliminar nombre</button>
+  <button onclick="logout()">Cerrar sesión</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>Desarrollado por Anthony Falcones Alcivar</span>
+  <a href="https://instagram.com/anthonovsky27" target="_blank">📸</a>
+</div>
+
+<script src="app.js"></script>
+</body>
 </html>
+
 
