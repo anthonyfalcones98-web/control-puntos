@@ -1,53 +1,108 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Control de Puntos Dashboard</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Puntos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .card { transition: all 0.3s ease; }
+    .card:hover { transform: translateY(-8px); }
+    .header-img { max-height: 260px; object-fit: cover; border-radius: 20px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+  </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-zinc-50 to-indigo-100 min-h-screen py-8">
+  <div class="max-w-6xl mx-auto px-6">
 
-<h1>Control de Puntos</h1>
+    <!-- Imagen header centrada -->
+    <div class="flex justify-center mb-10">
+      <img src="header.jpeg" alt="Header" class="header-img">
+    </div>
 
-<!-- Login Admin -->
-<div id="loginBox">
-  <input type="text" id="adminUser" placeholder="Usuario admin">
-  <input type="password" id="adminPass" placeholder="Contraseña">
-  <button onclick="login()">Login Admin</button>
-</div>
+    <h1 class="text-5xl font-bold text-center text-zinc-800 mb-2">🏆 SISTEMA DE PUNTOS</h1>
+    <p class="text-center text-zinc-600 text-2xl mb-12">Busca y administra los puntos</p>
 
-<div id="errorMsg"></div>
+    <!-- Buscador -->
+    <div class="max-w-2xl mx-auto mb-12">
+      <input id="searchInput" type="text" placeholder="🔎 Buscar nombre..." 
+             class="w-full px-8 py-6 text-2xl rounded-3xl border-2 border-zinc-300 focus:border-indigo-500 focus:outline-none shadow-lg">
+    </div>
 
-<hr>
+    <!-- Panel seleccionado -->
+    <div id="selectedPanel" class="hidden bg-white rounded-3xl shadow-2xl p-12 mb-12 text-center">
+      <p class="text-zinc-500 text-xl">Puntos de</p>
+      <h2 id="selectedName" class="text-5xl font-bold text-zinc-800 mt-2 mb-8"></h2>
+      <div id="selectedPoints" class="text-8xl font-black text-indigo-600">0</div>
+      <p class="text-zinc-400 text-xl mt-1">puntos</p>
+    </div>
 
-<!-- Buscador -->
-<div id="searchBox">
-  <input type="text" id="search" placeholder="🔍 Buscar nombre...">
-</div>
+    <!-- Grid de tarjetas -->
+    <div id="participantsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-<table id="usersTable">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Puntos</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+    <!-- Botón Admin flotante -->
+    <button onclick="showLoginModal()" 
+            class="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-3xl text-xl font-semibold shadow-2xl flex items-center gap-3 z-50">
+      <i class="fas fa-user-shield"></i>
+      <span>Administrador</span>
+    </button>
 
-<!-- Admin Panel -->
-<div id="adminPanel" style="display:none;">
-  <button onclick="addUserPrompt()">➕ Agregar usuario</button>
-  <button onclick="logout()">🚪 Desloguearse</button>
-</div>
+  </div>
 
-<!-- Créditos -->
-<div id="footer">
-  Desarrollado por <a href="https://instagram.com/anthonovsky27" target="_blank">Anthony Falcones Alcivar</a>
-</div>
+  <!-- Crédito -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <a href="https://www.instagram.com/Anthonovsky27" target="_blank" rel="noopener noreferrer"
+       class="flex items-center gap-2 text-zinc-500 hover:text-pink-500 transition-all duration-300 text-sm font-medium group">
+      <span class="group-hover:underline">Anthony Falcones Alcívar</span>
+      <i class="fab fa-instagram text-lg"></i>
+    </a>
+  </div>
 
-<script src="app.js"></script>
+  <!-- Modal Login -->
+  <div id="loginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+    <div class="bg-white rounded-3xl p-12 w-full max-w-md mx-4">
+      <h3 class="text-4xl font-bold text-center mb-10">🔑 Login Administrador</h3>
+      <input id="username" type="text" placeholder="Usuario" class="w-full px-8 py-5 text-2xl border-2 border-zinc-300 rounded-3xl mb-6 focus:outline-none focus:border-indigo-500">
+      <input id="password" type="password" placeholder="Contraseña" class="w-full px-8 py-5 text-2xl border-2 border-zinc-300 rounded-3xl mb-10 focus:outline-none focus:border-indigo-500">
+      <div class="flex gap-4">
+        <button onclick="hideLoginModal()" class="flex-1 py-5 text-xl font-semibold text-zinc-600 border-2 border-zinc-300 rounded-3xl hover:bg-zinc-50">Cancelar</button>
+        <button onclick="attemptLogin()" class="flex-1 py-5 text-xl font-semibold bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra Admin (sin botón de configuración) -->
+  <div id="adminToolbar" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-white shadow-2xl rounded-3xl p-4 flex gap-4 items-center z-[90]">
+    <button onclick="addPoint()" class="flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-plus"></i> +1
+    </button>
+    <button onclick="removePoint()" class="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-minus"></i> -1
+    </button>
+    <button onclick="deletePerson()" class="flex items-center gap-3 bg-rose-600 hover:bg-rose-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-trash"></i> Eliminar
+    </button>
+    <button onclick="addNewName()" class="flex items-center gap-3 bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-user-plus"></i> Nuevo
+    </button>
+    <button onclick="refreshData()" class="flex items-center gap-3 bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-sync-alt"></i> Recargar
+    </button>
+    
+    <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
+      <input type="checkbox" id="autoSaveToggle" checked onchange="toggleAutoSave()">
+      <span>Auto-guardar</span>
+    </label>
+    
+    <span id="saveStatus" class="px-5 py-2 text-sm font-medium rounded-2xl"></span>
+    
+    <button onclick="logout()" class="flex items-center gap-3 bg-zinc-700 hover:bg-zinc-800 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
 
