@@ -14,7 +14,6 @@ let filteredData = [];
 let selectedUser = null;
 let isAdmin = false;
 let autoSaveEnabled = true;
-let saveTimeout = null;
 
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "admin123";
@@ -49,8 +48,7 @@ function renderCards() {
 
 function selectUser(person) {
   selectedUser = person;
-  const panel = document.getElementById('selectedPanel');
-  panel.classList.remove('hidden');
+  document.getElementById('selectedPanel').classList.remove('hidden');
   document.getElementById('selectedName').textContent = person.name;
   document.getElementById('selectedPoints').textContent = person.points;
   renderCards();
@@ -62,13 +60,8 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderCards();
 });
 
-function showLoginModal() {
-  document.getElementById('loginModal').classList.remove('hidden');
-}
-
-function hideLoginModal() {
-  document.getElementById('loginModal').classList.add('hidden');
-}
+function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
 
 function attemptLogin() {
   const user = document.getElementById('username').value.trim();
@@ -93,12 +86,12 @@ function showStatus(text, colorClass) {
   const status = document.getElementById('saveStatus');
   status.textContent = text;
   status.className = `px-5 py-2 text-sm font-medium rounded-2xl ${colorClass}`;
-  setTimeout(() => status.textContent = '', 4000);
+  setTimeout(() => status.textContent = '', 5000);
 }
 
 async function saveToGitHubInternal() {
   if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
-    showStatus("❌ Configuración GitHub incompleta", "bg-red-100 text-red-700");
+    showStatus("❌ Config GitHub incompleta", "bg-red-100 text-red-700");
     return false;
   }
 
@@ -107,27 +100,28 @@ async function saveToGitHubInternal() {
   const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
 
   try {
+    // Obtener SHA
     let sha = null;
-    const getResponse = await fetch(url, {
+    const getRes = await fetch(url, {
       headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
     });
 
-    if (getResponse.status === 200) {
-      const fileData = await getResponse.json();
-      sha = fileData.sha;
-    } else if (getResponse.status !== 404) {
-      throw new Error(`GET falló: ${getResponse.status}`);
+    if (getRes.status === 200) {
+      const file = await getRes.json();
+      sha = file.sha;
+    } else if (getRes.status !== 404) {
+      throw new Error(`GET error: ${getRes.status}`);
     }
 
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
 
     const body = {
-      message: "Actualización automática desde la web",
+      message: "Cambio desde app web",
       content: content,
       ...(sha && { sha })
     };
 
-    const putResponse = await fetch(url, {
+    const putRes = await fetch(url, {
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -137,25 +131,19 @@ async function saveToGitHubInternal() {
       body: JSON.stringify(body)
     });
 
-    if (putResponse.ok) {
-      showStatus("✅ Guardado en GitHub", "bg-green-100 text-green-700");
+    if (putRes.ok) {
+      showStatus("✅ Guardado OK", "bg-green-100 text-green-700");
       return true;
     } else {
-      const err = await putResponse.json();
-      showStatus(`❌ ${err.message || putResponse.status}`, "bg-red-100 text-red-700");
+      const err = await putRes.json();
+      showStatus(`❌ ${err.message || 'Error ' + putRes.status}`, "bg-red-100 text-red-700");
       return false;
     }
   } catch (err) {
-    showStatus("❌ Error de conexión", "bg-red-100 text-red-700");
+    showStatus("❌ Falló conexión", "bg-red-100 text-red-700");
     console.error(err);
     return false;
   }
-}
-
-function debounceSave() {
-  if (!autoSaveEnabled) return;
-  if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(saveToGitHubInternal, 1500);
 }
 
 function addPoint() {
@@ -163,7 +151,7 @@ function addPoint() {
   selectedUser.points++;
   document.getElementById('selectedPoints').textContent = selectedUser.points;
   renderCards();
-  debounceSave();
+  if (autoSaveEnabled) saveToGitHubInternal();
 }
 
 function removePoint() {
@@ -172,40 +160,32 @@ function removePoint() {
     selectedUser.points--;
     document.getElementById('selectedPoints').textContent = selectedUser.points;
     renderCards();
-    debounceSave();
+    if (autoSaveEnabled) saveToGitHubInternal();
   }
 }
 
 function deletePerson() {
   if (!isAdmin || !selectedUser) return alert("Selecciona primero un participante");
-  if (confirm(`¿Eliminar permanentemente a ${selectedUser.name}?`)) {
+  if (confirm(`¿Eliminar ${selectedUser.name}?`)) {
     data = data.filter(p => p.name !== selectedUser.name);
     filteredData = filteredData.filter(p => p.name !== selectedUser.name);
     selectedUser = null;
     document.getElementById('selectedPanel').classList.add('hidden');
     renderCards();
-    debounceSave();
+    if (autoSaveEnabled) saveToGitHubInternal();
   }
 }
 
 function addNewName() {
   if (!isAdmin) return;
-  const name = prompt("Nombre completo del nuevo participante:");
+  const name = prompt("Nombre completo:");
   if (!name || !name.trim()) return;
   const clean = name.trim();
-  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) {
-    return alert("Ese nombre ya existe");
-  }
-  const nuevo = { name: clean, points: 0 };
-  data.push(nuevo);
-  filteredData.push(nuevo);
+  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) return alert("Ya existe");
+  data.push({ name: clean, points: 0 });
+  filteredData = [...data];
   renderCards();
-  debounceSave();
-}
-
-function refreshData() {
-  loadData();
-  showStatus("Datos recargados", "bg-blue-100 text-blue-700");
+  if (autoSaveEnabled) saveToGitHubInternal();
 }
 
 function toggleAutoSave() {
