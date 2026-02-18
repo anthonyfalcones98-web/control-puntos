@@ -1,159 +1,199 @@
 
 // ---------- CONFIGURACIÓN ----------
-const repoOwner = "anthonyfalcones98-web";
-const repoName = "control-puntos";
-const filePath = "data.json";
-const token = "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";
+const repoOwner = "";
+const repoName = "";
 
-const adminUser = "Antho98";
-const adminPass = "1234";
+const token = "";
 
-let data;
+// ================================================
+// === CONFIGURACIÓN GITHUB (HARDCODEADA) ===
+// ================================================
+// ¡¡¡ CAMBIA ESTOS 3 VALORES CON TUS DATOS REALES !!!
+const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
+const GITHUB_OWNER = "tanthonyfalcones98-web";                         // ← tu usuario de GitHub
+const GITHUB_REPO  = "control-puntos";                  // ← nombre del repo
+const filePath = "data.json";                    // ← datos del repo 
+
+// ================================================
+
+let data = [];
+let filteredData = [];
 let selectedUser = null;
 let isAdmin = false;
+let autoSaveEnabled = true;
+let saveTimeout = null;
 
-// ------------- CARGAR DATOS ----------------
-async function fetchData() {
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "admin123";
+
+async function loadData() {
   try {
-    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-      { headers: { Authorization: `token ${token}` } });
-    const json = await res.json();
-    data = JSON.parse(atob(json.content));
-    renderTable();
-  } catch(e) {
-    console.error("Error cargando datos:", e);
+    const res = await fetch('data.json?' + Date.now());
+    data = await res.json();
+    filteredData = [...data];
+    renderCards();
+  } catch (e) {
+    console.error(e);
   }
 }
 
-// ------------- RENDER TABLA ----------------
-function renderTable(query="") {
-  const tbody = document.querySelector("#usersTable tbody");
-  tbody.innerHTML = "";
-  data.users
-    .filter(u => u.name.toLowerCase().includes(query.toLowerCase()))
-    .forEach(user => {
-      const tr = document.createElement("tr");
-      tr.classList.toggle("selected", selectedUser && selectedUser.name === user.name);
-
-      const nameTd = document.createElement("td");
-      nameTd.textContent = user.name;
-      tr.appendChild(nameTd);
-
-      const pointsTd = document.createElement("td");
-      pointsTd.textContent = user.points;
-      tr.appendChild(pointsTd);
-
-      const actionsTd = document.createElement("td");
-      if(isAdmin) {
-        const addBtn = document.createElement("button");
-        addBtn.textContent = "➕";
-        addBtn.onclick = () => { selectedUser=user; addPoint(); };
-        actionsTd.appendChild(addBtn);
-
-        const subBtn = document.createElement("button");
-        subBtn.textContent = "➖";
-        subBtn.onclick = () => { selectedUser=user; removePoint(); };
-        actionsTd.appendChild(subBtn);
-
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "🗑️";
-        delBtn.onclick = () => { selectedUser=user; removeUser(); };
-        actionsTd.appendChild(delBtn);
-      }
-      tr.appendChild(actionsTd);
-
-      tbody.appendChild(tr);
-    });
+function renderCards() {
+  const grid = document.getElementById('participantsGrid');
+  grid.innerHTML = '';
+  filteredData.forEach(person => {
+    const isSelected = selectedUser && selectedUser.name === person.name;
+    const card = document.createElement('div');
+    card.className = `card bg-white rounded-3xl p-8 shadow-xl cursor-pointer border-4 ${isSelected ? 'border-indigo-500' : 'border-transparent'}`;
+    card.innerHTML = `
+      <div class="text-3xl font-bold text-zinc-800 mb-6">${person.name}</div>
+      <div class="text-7xl font-black text-indigo-600">${person.points}</div>
+      <div class="text-zinc-400 mt-1">puntos</div>
+    `;
+    card.onclick = () => selectUser(person);
+    grid.appendChild(card);
+  });
 }
 
-// ------------- BUSCADOR ----------------
-document.getElementById("search").addEventListener("input", e => {
-  renderTable(e.target.value);
+function selectUser(person) {
+  selectedUser = person;
+  const panel = document.getElementById('selectedPanel');
+  panel.classList.remove('hidden');
+  document.getElementById('selectedName').textContent = person.name;
+  document.getElementById('selectedPoints').textContent = person.points;
+  renderCards();
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase().trim();
+  filteredData = data.filter(p => p.name.toLowerCase().includes(term));
+  renderCards();
 });
 
-// ------------- LOGIN ----------------
-function login() {
-  const userInput = document.getElementById("adminUser").value.trim();
-  const passInput = document.getElementById("adminPass").value.trim();
+function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
 
-  if(userInput === adminUser && passInput === adminPass){
+function attemptLogin() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
     isAdmin = true;
-    document.getElementById("errorMsg").innerText = "";
-    alert("Administrador logueado correctamente");
-    document.getElementById("adminPanel").style.display = "block";
-    renderTable();
+    hideLoginModal();
+    document.getElementById('adminToolbar').classList.remove('hidden');
   } else {
-    isAdmin = false;
-    document.getElementById("errorMsg").innerText = "PENDEJO, ESCRIBE BIEN QUE ESE USUARIO O CONTRASEÑA NO EXISTE.";
-    renderTable();
+    alert("pendejo, escribe bien que ese usuario o contraseña no existe.");
   }
 }
 
 function logout() {
-  isAdmin = false;
-  selectedUser = null;
-  document.getElementById("adminPanel").style.display = "none";
-  document.getElementById("adminUser").value = "";
-  document.getElementById("adminPass").value = "";
-  renderTable();
-}
-
-// ------------- PUNTOS ----------------
-async function addPoint() {
-  if(!selectedUser || !isAdmin) return;
-  selectedUser.points += 1;
-  await saveData();
-  renderTable();
-}
-
-async function removePoint() {
-  if(!selectedUser || !isAdmin) return;
-  selectedUser.points -= 1;
-  await saveData();
-  renderTable();
-}
-
-// ------------- USUARIOS ----------------
-function addUserPrompt() {
-  if(!isAdmin) return;
-  const name = prompt("Ingrese el nombre del nuevo usuario:");
-  if(!name) return;
-  if(data.users.some(u => u.name.toLowerCase()===name.toLowerCase())){
-    alert("Este usuario ya existe.");
-    return;
+  if (confirm("¿Cerrar sesión?")) {
+    isAdmin = false;
+    document.getElementById('adminToolbar').classList.add('hidden');
   }
-  data.users.push({name: name.trim(), points:0});
-  saveData();
-  renderTable();
 }
 
-function removeUser() {
-  if(!selectedUser || !isAdmin) return;
-  if(!confirm(`¿Seguro quieres eliminar a ${selectedUser.name}?`)) return;
-  data.users = data.users.filter(u=>u.name!==selectedUser.name);
-  selectedUser=null;
-  saveData();
-  renderTable();
+function showStatus(text, colorClass) {
+  const status = document.getElementById('saveStatus');
+  status.textContent = text;
+  status.className = `px-5 py-2 text-sm font-medium rounded-2xl ${colorClass}`;
+  setTimeout(() => status.classList.add('hidden'), 3000);
 }
 
-// ------------- GUARDAR EN GITHUB ----------------
-async function saveData(){
-  try{
-    const getFile = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-      { headers: { Authorization: `token ${token}` }});
-    const file = await getFile.json();
+async function saveToGitHubInternal() {
+  if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
+    showStatus("❌ Falta configurar GitHub en el código", "bg-red-100 text-red-700");
+    return false;
+  }
+  showStatus("Guardando en GitHub...", "bg-amber-100 text-amber-700");
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
+  try {
+    let sha = null;
+    const getRes = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
+    if (getRes.status === 200) sha = (await getRes.json()).sha;
 
-    await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-      method:"PUT",
-      headers:{ Authorization:`token ${token}`, "Content-Type":"application/json"},
-      body: JSON.stringify({
-        message: "Actualizar datos",
-        content: btoa(JSON.stringify(data,null,2)),
-        sha: file.sha
-      })
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+    const body = {
+      message: "Auto-guardado desde web",
+      content: content,
+      sha: sha
+    };
+
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${GITHUB_TOKEN}`,
+        "Accept": "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify(body)
     });
-  } catch(e){ console.error("Error guardando datos:",e);}
+
+    if (res.ok) {
+      showStatus("✅ Guardado automáticamente", "bg-green-100 text-green-700");
+      return true;
+    } else {
+      showStatus("❌ Error al guardar", "bg-red-100 text-red-700");
+      return false;
+    }
+  } catch (e) {
+    showStatus("❌ No se pudo conectar a GitHub", "bg-red-100 text-red-700");
+    return false;
+  }
 }
 
-// ------------- INICIAL ----------------
-fetchData();
+function debounceSave() {
+  if (!autoSaveEnabled) return;
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => saveToGitHubInternal(), 1500);
+}
+
+function addPoint() {
+  if (!isAdmin || !selectedUser) return;
+  selectedUser.points++;
+  document.getElementById('selectedPoints').textContent = selectedUser.points;
+  renderCards();
+  debounceSave();
+}
+
+function removePoint() {
+  if (!isAdmin || !selectedUser) return;
+  if (selectedUser.points > 0) selectedUser.points--;
+  document.getElementById('selectedPoints').textContent = selectedUser.points;
+  renderCards();
+  debounceSave();
+}
+
+function deletePerson() {
+  if (!isAdmin || !selectedUser) return alert("Selecciona primero un participante");
+  if (confirm(`¿Eliminar permanentemente a ${selectedUser.name}?`)) {
+    data = data.filter(p => p.name !== selectedUser.name);
+    filteredData = filteredData.filter(p => p.name !== selectedUser.name);
+    selectedUser = null;
+    document.getElementById('selectedPanel').classList.add('hidden');
+    renderCards();
+    debounceSave();
+  }
+}
+
+function addNewName() {
+  if (!isAdmin) return;
+  const name = prompt("Nombre completo del nuevo participante:");
+  if (!name || !name.trim()) return;
+  const clean = name.trim();
+  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) return alert("Ese nombre ya existe");
+  const nuevo = { name: clean, points: 0 };
+  data.push(nuevo);
+  filteredData.push(nuevo);
+  renderCards();
+  debounceSave();
+}
+
+function refreshData() {
+  loadData();
+  alert("✅ Datos recargados");
+}
+
+function toggleAutoSave() {
+  autoSaveEnabled = document.getElementById('autoSaveToggle').checked;
+}
+
+window.onload = loadData;
