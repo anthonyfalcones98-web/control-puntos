@@ -53,11 +53,11 @@
 
   </div>
 
-  <!-- Crédito -->
-  <div class="fixed bottom-6 right-32 z-30 md:right-40 lg:right-48">
+  <!-- Crédito - movido más a la izquierda y abajo para NO taparse -->
+  <div class="fixed bottom-16 left-6 z-40 md:left-8 lg:left-12">
     <a href="https://www.instagram.com/Anthonovsky27" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 text-zinc-600 hover:text-pink-600 transition-all duration-300 text-base font-medium group shadow-sm bg-white/70 px-4 py-2 rounded-full">
-      <i class="fab fa-instagram text-xl"></i>
+       class="flex items-center gap-3 text-zinc-700 hover:text-pink-600 transition-all duration-300 text-lg font-medium bg-white/80 px-5 py-3 rounded-full shadow-md">
+      <i class="fab fa-instagram text-2xl"></i>
       <span class="group-hover:underline">Anthony Falcones Alcívar</span>
     </a>
   </div>
@@ -89,8 +89,8 @@
     <button onclick="addNewName()" class="flex items-center gap-3 bg-amber-600 hover:bg-amber-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-user-plus"></i> Nuevo
     </button>
-    <button onclick="refreshData()" class="flex items-center gap-3 bg-purple-600 hover:bg-purple-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
-      <i class="fas fa-sync-alt"></i> Recargar
+    <button onclick="saveToGitHubInternal()" class="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
+      <i class="fas fa-save"></i> Guardar ahora
     </button>
     <label class="flex items-center gap-2 text-sm font-medium cursor-pointer whitespace-nowrap">
       <input type="checkbox" id="autoSaveToggle" checked onchange="toggleAutoSave()">
@@ -105,4 +105,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
