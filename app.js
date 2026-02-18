@@ -3,7 +3,7 @@
 // === CONFIGURACIÓN GITHUB (HARDCODEADA) ===
 // ================================================
 // ¡¡¡ CAMBIA ESTOS 3 VALORES CON TUS DATOS REALES !!!
-const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
+const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
 const GITHUB_OWNER = "tanthonyfalcones98-web";                         // ← tu usuario de GitHub
 const GITHUB_REPO  = "control-puntos";                  // ← nombre del repo
 
