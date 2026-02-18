@@ -21,6 +21,7 @@ const ADMIN_PASS = "admin123";
 async function loadData() {
   try {
     const res = await fetch('data.json?' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
     filteredData = [...data];
     renderCards();
@@ -60,8 +61,13 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderCards();
 });
 
-function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+function showLoginModal() {
+  document.getElementById('loginModal').classList.remove('hidden');
+}
+
+function hideLoginModal() {
+  document.getElementById('loginModal').classList.add('hidden');
+}
 
 function attemptLogin() {
   const user = document.getElementById('username').value.trim();
@@ -100,19 +106,24 @@ async function saveToGitHubInternal() {
   const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
 
   try {
-    // Obtener SHA
+    // Intentar obtener SHA actual
     let sha = null;
     const getRes = await fetch(url, {
-      headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
     });
 
     if (getRes.status === 200) {
       const file = await getRes.json();
       sha = file.sha;
     } else if (getRes.status !== 404) {
-      throw new Error(`GET error: ${getRes.status}`);
+      const err = await getRes.json().catch(() => ({}));
+      throw new Error(`GET falló: ${getRes.status} - ${err.message || 'desconocido'}`);
     }
 
+    // Codificar contenido
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
 
     const body = {
@@ -135,17 +146,19 @@ async function saveToGitHubInternal() {
       showStatus("✅ Guardado OK", "bg-green-100 text-green-700");
       return true;
     } else {
-      const err = await putRes.json();
+      const err = await putRes.json().catch(() => ({}));
       showStatus(`❌ ${err.message || 'Error ' + putRes.status}`, "bg-red-100 text-red-700");
+      console.error("PUT error:", err);
       return false;
     }
   } catch (err) {
     showStatus("❌ Falló conexión", "bg-red-100 text-red-700");
-    console.error(err);
+    console.error("Error completo:", err);
     return false;
   }
 }
 
+// Acciones que guardan automáticamente si está activado
 function addPoint() {
   if (!isAdmin || !selectedUser) return;
   selectedUser.points++;
@@ -178,10 +191,12 @@ function deletePerson() {
 
 function addNewName() {
   if (!isAdmin) return;
-  const name = prompt("Nombre completo:");
+  const name = prompt("Nombre completo del nuevo participante:");
   if (!name || !name.trim()) return;
   const clean = name.trim();
-  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) return alert("Ya existe");
+  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) {
+    return alert("Ese nombre ya existe");
+  }
   data.push({ name: clean, points: 0 });
   filteredData = [...data];
   renderCards();
@@ -191,5 +206,10 @@ function addNewName() {
 function toggleAutoSave() {
   autoSaveEnabled = document.getElementById('autoSaveToggle').checked;
 }
+
+// Recarga automática cada 10 segundos (para ver cambios de otros usuarios)
+setInterval(() => {
+  loadData();
+}, 10000);
 
 window.onload = loadData;
