@@ -14,18 +14,22 @@
   </style>
 </head>
 <body class="bg-gradient-to-br from-zinc-50 to-indigo-100 min-h-screen py-8">
+
   <div class="max-w-6xl mx-auto px-6">
 
-    <!-- Imagen header centrada -->
+    <!-- Header imagen -->
     <div class="flex justify-center mb-10">
       <img src="header.jpeg" alt="Header" class="header-img">
     </div>
 
     <h1 class="text-5xl font-bold text-center text-zinc-800 mb-2">🏆 SISTEMA DE PUNTOS</h1>
+    <p class="text-center text-zinc-600 text-2xl mb-12">Busca y administra los puntos</p>
 
     <!-- Buscador -->
     <div class="max-w-2xl mx-auto mb-12">
-      <input id="searchInput" type="text" placeholder="🔎 Escriba el nombre del Ciudadano/a..." 
+      <input id="searchInput" 
+             type="text" 
+             placeholder="🔎 Buscar nombre..." 
              class="w-full px-8 py-6 text-2xl rounded-3xl border-2 border-zinc-300 focus:border-indigo-500 focus:outline-none shadow-lg">
     </div>
 
@@ -50,11 +54,11 @@
   </div>
 
   <!-- Crédito -->
-  <div class="fixed bottom-6 right-6 z-40">
+  <div class="fixed bottom-6 right-32 z-30 md:right-40 lg:right-48">
     <a href="https://www.instagram.com/Anthonovsky27" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 text-zinc-500 hover:text-pink-500 transition-all duration-300 text-sm font-medium group">
+       class="flex items-center gap-2 text-zinc-600 hover:text-pink-600 transition-all duration-300 text-base font-medium group shadow-sm bg-white/70 px-4 py-2 rounded-full">
+      <i class="fab fa-instagram text-xl"></i>
       <span class="group-hover:underline">Anthony Falcones Alcívar</span>
-      <i class="fab fa-instagram text-lg"></i>
     </a>
   </div>
 
@@ -71,32 +75,29 @@
     </div>
   </div>
 
-  <!-- Barra Admin (sin botón de configuración) -->
-  <div id="adminToolbar" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-white shadow-2xl rounded-3xl p-4 flex gap-4 items-center z-[90]">
-    <button onclick="addPoint()" class="flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+  <!-- Barra Admin -->
+  <div id="adminToolbar" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-white shadow-2xl rounded-3xl p-4 flex gap-4 items-center z-[90] flex-wrap justify-center">
+    <button onclick="addPoint()" class="flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-plus"></i> +1
     </button>
-    <button onclick="removePoint()" class="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+    <button onclick="removePoint()" class="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-minus"></i> -1
     </button>
-    <button onclick="deletePerson()" class="flex items-center gap-3 bg-rose-600 hover:bg-rose-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+    <button onclick="deletePerson()" class="flex items-center gap-3 bg-rose-600 hover:bg-rose-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-trash"></i> Eliminar
     </button>
-    <button onclick="addNewName()" class="flex items-center gap-3 bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+    <button onclick="addNewName()" class="flex items-center gap-3 bg-amber-600 hover:bg-amber-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-user-plus"></i> Nuevo
     </button>
-    <button onclick="refreshData()" class="flex items-center gap-3 bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+    <button onclick="refreshData()" class="flex items-center gap-3 bg-purple-600 hover:bg-purple-700 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-sync-alt"></i> Recargar
     </button>
-    
-    <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
+    <label class="flex items-center gap-2 text-sm font-medium cursor-pointer whitespace-nowrap">
       <input type="checkbox" id="autoSaveToggle" checked onchange="toggleAutoSave()">
       <span>Auto-guardar</span>
     </label>
-    
     <span id="saveStatus" class="px-5 py-2 text-sm font-medium rounded-2xl"></span>
-    
-    <button onclick="logout()" class="flex items-center gap-3 bg-zinc-700 hover:bg-zinc-800 text-white px-8 py-4 rounded-3xl font-semibold text-xl">
+    <button onclick="logout()" class="flex items-center gap-3 bg-zinc-700 hover:bg-zinc-800 text-white px-6 py-4 rounded-3xl font-semibold text-xl">
       <i class="fas fa-sign-out-alt"></i>
     </button>
   </div>
@@ -104,5 +105,4 @@
   <script src="app.js"></script>
 </body>
 </html>
-
 
