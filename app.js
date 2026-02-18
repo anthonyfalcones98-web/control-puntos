@@ -9,7 +9,7 @@ const token = "";
 // === CONFIGURACIÓN GITHUB (HARDCODEADA) ===
 // ================================================
 // ¡¡¡ CAMBIA ESTOS 3 VALORES CON TUS DATOS REALES !!!
-const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
+const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
 const GITHUB_OWNER = "tanthonyfalcones98-web";                         // ← tu usuario de GitHub
 const GITHUB_REPO  = "control-puntos";                  // ← nombre del repo
 const filePath = "data.json";                    // ← datos del repo 
