@@ -1,10 +1,4 @@
 
-// ---------- CONFIGURACIÓN ----------
-const repoOwner = "";
-const repoName = "";
-
-const token = "";
-
 // ================================================
 // === CONFIGURACIÓN GITHUB (HARDCODEADA) ===
 // ================================================
@@ -12,7 +6,6 @@ const token = "";
 const GITHUB_TOKEN = "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";   // ← TU TOKEN AQUÍ
 const GITHUB_OWNER = "tanthonyfalcones98-web";                         // ← tu usuario de GitHub
 const GITHUB_REPO  = "control-puntos";                  // ← nombre del repo
-const filePath = "data.json";                    // ← datos del repo 
 
 // ================================================
 
@@ -33,7 +26,7 @@ async function loadData() {
     filteredData = [...data];
     renderCards();
   } catch (e) {
-    console.error(e);
+    console.error("Error cargando data.json:", e);
   }
 }
 
@@ -69,8 +62,13 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderCards();
 });
 
-function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+function showLoginModal() {
+  document.getElementById('loginModal').classList.remove('hidden');
+}
+
+function hideLoginModal() {
+  document.getElementById('loginModal').classList.add('hidden');
+}
 
 function attemptLogin() {
   const user = document.getElementById('username').value.trim();
@@ -95,47 +93,61 @@ function showStatus(text, colorClass) {
   const status = document.getElementById('saveStatus');
   status.textContent = text;
   status.className = `px-5 py-2 text-sm font-medium rounded-2xl ${colorClass}`;
-  setTimeout(() => status.classList.add('hidden'), 3000);
+  setTimeout(() => status.textContent = '', 4000);
 }
 
 async function saveToGitHubInternal() {
   if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
-    showStatus("❌ Falta configurar GitHub en el código", "bg-red-100 text-red-700");
+    showStatus("❌ Configuración GitHub incompleta", "bg-red-100 text-red-700");
     return false;
   }
-  showStatus("Guardando en GitHub...", "bg-amber-100 text-amber-700");
+
+  showStatus("Guardando...", "bg-amber-100 text-amber-700");
+
   const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
+
   try {
     let sha = null;
-    const getRes = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-    if (getRes.status === 200) sha = (await getRes.json()).sha;
+    const getResponse = await fetch(url, {
+      headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+
+    if (getResponse.status === 200) {
+      const fileData = await getResponse.json();
+      sha = fileData.sha;
+    } else if (getResponse.status !== 404) {
+      throw new Error(`GET falló: ${getResponse.status}`);
+    }
 
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
 
     const body = {
-      message: "Auto-guardado desde web",
+      message: "Actualización automática desde la web",
       content: content,
-      sha: sha
+      ...(sha && { sha })
     };
 
-    const res = await fetch(url, {
-      method: "PUT",
+    const putResponse = await fetch(url, {
+      method: 'PUT',
       headers: {
-        "Authorization": `token ${GITHUB_TOKEN}`,
-        "Accept": "application/vnd.github.v3+json"
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     });
 
-    if (res.ok) {
-      showStatus("✅ Guardado automáticamente", "bg-green-100 text-green-700");
+    if (putResponse.ok) {
+      showStatus("✅ Guardado en GitHub", "bg-green-100 text-green-700");
       return true;
     } else {
-      showStatus("❌ Error al guardar", "bg-red-100 text-red-700");
+      const err = await putResponse.json();
+      showStatus(`❌ ${err.message || putResponse.status}`, "bg-red-100 text-red-700");
       return false;
     }
-  } catch (e) {
-    showStatus("❌ No se pudo conectar a GitHub", "bg-red-100 text-red-700");
+  } catch (err) {
+    showStatus("❌ Error de conexión", "bg-red-100 text-red-700");
+    console.error(err);
     return false;
   }
 }
@@ -143,7 +155,7 @@ async function saveToGitHubInternal() {
 function debounceSave() {
   if (!autoSaveEnabled) return;
   if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => saveToGitHubInternal(), 1500);
+  saveTimeout = setTimeout(saveToGitHubInternal, 1500);
 }
 
 function addPoint() {
@@ -156,10 +168,12 @@ function addPoint() {
 
 function removePoint() {
   if (!isAdmin || !selectedUser) return;
-  if (selectedUser.points > 0) selectedUser.points--;
-  document.getElementById('selectedPoints').textContent = selectedUser.points;
-  renderCards();
-  debounceSave();
+  if (selectedUser.points > 0) {
+    selectedUser.points--;
+    document.getElementById('selectedPoints').textContent = selectedUser.points;
+    renderCards();
+    debounceSave();
+  }
 }
 
 function deletePerson() {
@@ -179,7 +193,9 @@ function addNewName() {
   const name = prompt("Nombre completo del nuevo participante:");
   if (!name || !name.trim()) return;
   const clean = name.trim();
-  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) return alert("Ese nombre ya existe");
+  if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) {
+    return alert("Ese nombre ya existe");
+  }
   const nuevo = { name: clean, points: 0 };
   data.push(nuevo);
   filteredData.push(nuevo);
@@ -189,7 +205,7 @@ function addNewName() {
 
 function refreshData() {
   loadData();
-  alert("✅ Datos recargados");
+  showStatus("Datos recargados", "bg-blue-100 text-blue-700");
 }
 
 function toggleAutoSave() {
