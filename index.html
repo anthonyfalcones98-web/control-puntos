@@ -7,29 +7,27 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; }
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      background: linear-gradient(to bottom right, #a1d4ff, #6ab7ff); /* Celeste claro de tu imagen, un poco más oscuro */
+    }
     .card { transition: all 0.3s ease; }
     .card:hover { transform: translateY(-8px); }
-    /* Imagen cabecera más grande y con mejor ajuste */
-    .header-img {
-      max-height: 400px; /* ← aumentado de 260px a 400px */
-      width: 100%;
-      object-fit: cover;
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35);
-      border: 4px solid white;
-    }
-    /* Degradado de énfasis inspirado en cabeceras vibrantes (naranja-rojo a índigo) */
-    .bg-gradient-to-br {
-      background: linear-gradient(to bottom right, #ff6b6b, #ff8e53, #4e54c8);
+    .header-img { 
+      max-height: 400px; 
+      width: 100%; 
+      object-fit: cover; 
+      border-radius: 24px; 
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35); 
+      border: 4px solid white; 
     }
   </style>
 </head>
-<body class="bg-gradient-to-br min-h-screen py-8">
+<body class="min-h-screen py-8">
 
   <div class="max-w-6xl mx-auto px-6">
 
-    <!-- Header imagen - más grande -->
+    <!-- Header imagen más grande -->
     <div class="flex justify-center mb-12">
       <img src="header.jpeg" alt="Header" class="header-img">
     </div>
@@ -37,16 +35,16 @@
     <h1 class="text-6xl font-bold text-center text-white mb-3 drop-shadow-lg">🏆 SISTEMA DE PUNTOS</h1>
     <p class="text-center text-white text-2xl mb-12 drop-shadow-md">Busca y administra los puntos</p>
 
-    <!-- Buscador - con fondo más acorde -->
+    <!-- Buscador -->
     <div class="max-w-2xl mx-auto mb-12">
       <input id="searchInput" 
              type="text" 
              placeholder="🔎 Buscar nombre..." 
-             class="w-full px-8 py-6 text-2xl rounded-3xl border-2 border-white/30 focus:border-white focus:outline-none shadow-2xl bg-white/20 backdrop-blur-md text-white placeholder-white/70">
+             class="w-full px-8 py-6 text-2xl rounded-3xl border-2 border-white/40 focus:border-white focus:outline-none shadow-2xl bg-white/30 backdrop-blur-md text-white placeholder-white/70">
     </div>
 
     <!-- Panel seleccionado -->
-    <div id="selectedPanel" class="hidden bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-12 mb-12 text-center border border-white/20">
+    <div id="selectedPanel" class="hidden bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-12 mb-12 text-center border border-white/30">
       <p class="text-gray-700 text-xl">Puntos de</p>
       <h2 id="selectedName" class="text-5xl font-bold text-gray-900 mt-2 mb-8"></h2>
       <div id="selectedPoints" class="text-8xl font-black text-indigo-600 drop-shadow">0</div>
@@ -56,9 +54,9 @@
     <!-- Grid de tarjetas -->
     <div id="participantsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-    <!-- Botón Admin flotante - con color de énfasis -->
+    <!-- Botón Admin flotante -->
     <button onclick="showLoginModal()" 
-            class="fixed bottom-8 right-8 bg-gradient-to-r from-red-500 to-indigo-600 hover:from-red-600 hover:to-indigo-700 text-white px-10 py-5 rounded-3xl text-xl font-semibold shadow-2xl flex items-center gap-3 z-50 transition-all">
+            class="fixed bottom-8 right-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-10 py-5 rounded-3xl text-xl font-semibold shadow-2xl flex items-center gap-3 z-50 transition-all">
       <i class="fas fa-user-shield"></i>
       <span>Administrador</span>
     </button>
@@ -68,27 +66,27 @@
   <!-- Crédito -->
   <div class="fixed bottom-16 left-6 z-40 md:left-8 lg:left-12">
     <a href="https://www.instagram.com/Anthonovsky27" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-3 text-white hover:text-pink-400 transition-all duration-300 text-lg font-medium bg-black/40 px-5 py-3 rounded-full shadow-md backdrop-blur-sm">
+       class="flex items-center gap-3 text-white hover:text-pink-300 transition-all duration-300 text-lg font-medium bg-black/40 px-5 py-3 rounded-full shadow-md backdrop-blur-sm">
       <i class="fab fa-instagram text-2xl"></i>
       <span>Anthony Falcones Alcívar</span>
     </a>
   </div>
 
-  <!-- Modal Login - fondo más acorde -->
+  <!-- Modal Login -->
   <div id="loginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
     <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-12 w-full max-w-md mx-4 border border-white/20 shadow-2xl">
       <h3 class="text-4xl font-bold text-center mb-10 text-gray-900">🔑 Login Administrador</h3>
-      <input id="username" type="text" placeholder="Usuario" class="w-full px-8 py-5 text-2xl border-2 border-gray-300 rounded-3xl mb-6 focus:outline-none focus:border-indigo-500 bg-white/80">
-      <input id="password" type="password" placeholder="Contraseña" class="w-full px-8 py-5 text-2xl border-2 border-gray-300 rounded-3xl mb-10 focus:outline-none focus:border-indigo-500 bg-white/80">
+      <input id="username" type="text" placeholder="Usuario" class="w-full px-8 py-5 text-2xl border-2 border-gray-300 rounded-3xl mb-6 focus:outline-none focus:border-cyan-500 bg-white/80">
+      <input id="password" type="password" placeholder="Contraseña" class="w-full px-8 py-5 text-2xl border-2 border-gray-300 rounded-3xl mb-10 focus:outline-none focus:border-cyan-500 bg-white/80">
       <div class="flex gap-4">
         <button onclick="hideLoginModal()" class="flex-1 py-5 text-xl font-semibold text-gray-600 border-2 border-gray-300 rounded-3xl hover:bg-gray-100">Cancelar</button>
-        <button onclick="attemptLogin()" class="flex-1 py-5 text-xl font-semibold bg-gradient-to-r from-red-500 to-indigo-600 text-white rounded-3xl hover:from-red-600 hover:to-indigo-700">Entrar</button>
+        <button onclick="attemptLogin()" class="flex-1 py-5 text-xl font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-3xl hover:from-cyan-600 hover:to-blue-700">Entrar</button>
       </div>
     </div>
   </div>
 
-  <!-- Barra Admin - con degradado de énfasis -->
-  <div id="adminToolbar" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-500/90 to-indigo-600/90 backdrop-blur-lg shadow-2xl rounded-3xl p-4 flex gap-4 items-center z-[90] flex-wrap justify-center border border-white/20">
+  <!-- Barra Admin -->
+  <div id="adminToolbar" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-500/90 to-blue-600/90 backdrop-blur-lg shadow-2xl rounded-3xl p-4 flex gap-4 items-center z-[90] flex-wrap justify-center border border-white/20">
     <button onclick="addPoint()" class="flex items-center gap-3 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-3xl font-semibold text-xl transition-all">
       <i class="fas fa-plus"></i> +1
     </button>
@@ -112,7 +110,6 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    // Tu configuración de Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
