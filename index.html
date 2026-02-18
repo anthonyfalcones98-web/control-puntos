@@ -100,155 +100,161 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    // ────────────────────────────────────────────────
-    //  Tu configuración de Firebase (ya integrada)
-    // ────────────────────────────────────────────────
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+  // Tu config de Firebase (ya está correcta)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjuCA78ZP1W-JyNdaI4IrAVKhFgLGDClo",
-      authDomain: "sistema-puntos-app.firebaseapp.com",
-      projectId: "sistema-puntos-app",
-      storageBucket: "sistema-puntos-app.firebasestorage.app",
-      messagingSenderId: "493138426072",
-      appId: "1:493138426072:web:0cccb68c1ac0f00a8b3fad",
-      measurementId: "G-ZJN30NY6B2"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjuCA78ZP1W-JyNdaI4IrAVKhFgLGDClo",
+    authDomain: "sistema-puntos-app.firebaseapp.com",
+    projectId: "sistema-puntos-app",
+    storageBucket: "sistema-puntos-app.firebasestorage.app",
+    messagingSenderId: "493138426072",
+    appId: "1:493138426072:web:0cccb68c1ac0f00a8b3fad",
+    measurementId: "G-ZJN30NY6B2"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    const participantsRef = ref(db, 'participants');
+  const participantsRef = ref(db, 'participants');
 
-    let data = [];
-    let filteredData = [];
-    let selectedUser = null;
-    let isAdmin = false;
+  let data = [];
+  let filteredData = [];
+  let selectedUser = null;
+  let isAdmin = false;
 
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "admin123";
+  const ADMIN_USER = "admin";
+  const ADMIN_PASS = "admin123";
 
-    // Escucha cambios en tiempo real
-    onValue(participantsRef, (snapshot) => {
-      const dbData = snapshot.val();
-      data = dbData ? Object.values(dbData) : [];
-      filteredData = [...data];
-      renderCards();
+  // Escucha cambios en tiempo real
+  onValue(participantsRef, (snapshot) => {
+    const dbData = snapshot.val();
+    data = dbData ? Object.values(dbData) : [];
+    filteredData = [...data];
+    renderCards();
 
-      if (selectedUser) {
-        const updated = data.find(p => p.name === selectedUser.name);
-        if (updated) {
-          selectedUser = updated;
-          document.getElementById('selectedPoints').textContent = selectedUser.points;
-        } else {
-          selectedUser = null;
-          document.getElementById('selectedPanel').classList.add('hidden');
-        }
-      }
-    });
-
-    function renderCards() {
-      const grid = document.getElementById('participantsGrid');
-      grid.innerHTML = '';
-      filteredData.forEach(person => {
-        const isSelected = selectedUser && selectedUser.name === person.name;
-        const card = document.createElement('div');
-        card.className = `card bg-white rounded-3xl p-8 shadow-xl cursor-pointer border-4 ${isSelected ? 'border-indigo-500' : 'border-transparent'}`;
-        card.innerHTML = `
-          <div class="text-3xl font-bold text-zinc-800 mb-6">${person.name}</div>
-          <div class="text-7xl font-black text-indigo-600">${person.points}</div>
-          <div class="text-zinc-400 mt-1">puntos</div>
-        `;
-        card.onclick = () => selectUser(person);
-        grid.appendChild(card);
-      });
-    }
-
-    function selectUser(person) {
-      selectedUser = person;
-      document.getElementById('selectedPanel').classList.remove('hidden');
-      document.getElementById('selectedName').textContent = person.name;
-      document.getElementById('selectedPoints').textContent = person.points;
-      renderCards();
-    }
-
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      filteredData = data.filter(p => p.name.toLowerCase().includes(term));
-      renderCards();
-    });
-
-    function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-    function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-
-    function attemptLogin() {
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value.trim();
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        isAdmin = true;
-        hideLoginModal();
-        document.getElementById('adminToolbar').classList.remove('hidden');
+    if (selectedUser) {
+      const updated = data.find(p => p.name === selectedUser.name);
+      if (updated) {
+        selectedUser = updated;
+        document.getElementById('selectedPoints').textContent = selectedUser.points;
       } else {
-        alert("pendejo, escribe bien que ese usuario o contraseña no existe.");
+        selectedUser = null;
+        document.getElementById('selectedPanel').classList.add('hidden');
       }
     }
+  });
 
-    function logout() {
-      if (confirm("¿Cerrar sesión?")) {
-        isAdmin = false;
-        document.getElementById('adminToolbar').classList.add('hidden');
-      }
+  function renderCards() {
+    const grid = document.getElementById('participantsGrid');
+    grid.innerHTML = '';
+    filteredData.forEach(person => {
+      const isSelected = selectedUser && selectedUser.name === person.name;
+      const card = document.createElement('div');
+      card.className = `card bg-white rounded-3xl p-8 shadow-xl cursor-pointer border-4 ${isSelected ? 'border-indigo-500' : 'border-transparent'}`;
+      card.innerHTML = `
+        <div class="text-3xl font-bold text-zinc-800 mb-6">${person.name}</div>
+        <div class="text-7xl font-black text-indigo-600">${person.points}</div>
+        <div class="text-zinc-400 mt-1">puntos</div>
+      `;
+      card.onclick = () => selectUser(person);
+      grid.appendChild(card);
+    });
+  }
+
+  function selectUser(person) {
+    selectedUser = person;
+    document.getElementById('selectedPanel').classList.remove('hidden');
+    document.getElementById('selectedName').textContent = person.name;
+    document.getElementById('selectedPoints').textContent = person.points;
+    renderCards();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    filteredData = data.filter(p => p.name.toLowerCase().includes(term));
+    renderCards();
+  });
+
+  // Exponemos las funciones al ámbito global para que onclick las vea
+  window.showLoginModal = function() {
+    document.getElementById('loginModal').classList.remove('hidden');
+  };
+
+  window.hideLoginModal = function() {
+    document.getElementById('loginModal').classList.add('hidden');
+  };
+
+  window.attemptLogin = function() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      isAdmin = true;
+      hideLoginModal();
+      document.getElementById('adminToolbar').classList.remove('hidden');
+      showStatus("¡Bienvenido administrador!", "bg-green-100 text-green-700");
+    } else {
+      alert("pendejo, escribe bien que ese usuario o contraseña no existe.");
     }
+  };
 
-    function showStatus(text, colorClass) {
-      const status = document.getElementById('saveStatus');
-      status.textContent = text;
-      status.className = `px-5 py-2 text-sm font-medium rounded-2xl ${colorClass}`;
-      setTimeout(() => status.textContent = '', 4000);
+  window.logout = function() {
+    if (confirm("¿Cerrar sesión?")) {
+      isAdmin = false;
+      document.getElementById('adminToolbar').classList.add('hidden');
     }
+  };
 
-    function addPoint() {
-      if (!isAdmin || !selectedUser) return;
+  window.showStatus = function(text, colorClass) {
+    const status = document.getElementById('saveStatus');
+    status.textContent = text;
+    status.className = `px-5 py-2 text-sm font-medium rounded-2xl ${colorClass}`;
+    setTimeout(() => status.textContent = '', 4000);
+  };
+
+  // Funciones de modificación
+  window.addPoint = function() {
+    if (!isAdmin || !selectedUser) return;
+    const userRef = ref(db, `participants/${selectedUser.name}`);
+    update(userRef, { points: selectedUser.points + 1 });
+    showStatus("✅ +1 guardado", "bg-green-100 text-green-700");
+  };
+
+  window.removePoint = function() {
+    if (!isAdmin || !selectedUser) return;
+    if (selectedUser.points > 0) {
       const userRef = ref(db, `participants/${selectedUser.name}`);
-      update(userRef, { points: selectedUser.points + 1 });
-      showStatus("✅ +1 guardado", "bg-green-100 text-green-700");
+      update(userRef, { points: selectedUser.points - 1 });
+      showStatus("✅ -1 guardado", "bg-green-100 text-green-700");
     }
+  };
 
-    function removePoint() {
-      if (!isAdmin || !selectedUser) return;
-      if (selectedUser.points > 0) {
-        const userRef = ref(db, `participants/${selectedUser.name}`);
-        update(userRef, { points: selectedUser.points - 1 });
-        showStatus("✅ -1 guardado", "bg-green-100 text-green-700");
-      }
+  window.deletePerson = function() {
+    if (!isAdmin || !selectedUser) return alert("Selecciona primero un participante");
+    if (confirm(`¿Eliminar permanentemente a ${selectedUser.name}?`)) {
+      const userRef = ref(db, `participants/${selectedUser.name}`);
+      remove(userRef);
+      showStatus("✅ Eliminado", "bg-green-100 text-green-700");
     }
+  };
 
-    function deletePerson() {
-      if (!isAdmin || !selectedUser) return alert("Selecciona primero un participante");
-      if (confirm(`¿Eliminar permanentemente a ${selectedUser.name}?`)) {
-        const userRef = ref(db, `participants/${selectedUser.name}`);
-        remove(userRef);
-        showStatus("✅ Eliminado", "bg-green-100 text-green-700");
-      }
+  window.addNewName = function() {
+    if (!isAdmin) return;
+    const name = prompt("Nombre completo del nuevo participante:");
+    if (!name || !name.trim()) return;
+    const clean = name.trim();
+    if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) {
+      return alert("Ese nombre ya existe");
     }
+    const newRef = ref(db, `participants/${clean}`);
+    set(newRef, { name: clean, points: 0 });
+    showStatus("✅ Nuevo agregado", "bg-green-100 text-green-700");
+  };
 
-    function addNewName() {
-      if (!isAdmin) return;
-      const name = prompt("Nombre completo del nuevo participante:");
-      if (!name || !name.trim()) return;
-      const clean = name.trim();
-      if (data.some(p => p.name.toLowerCase() === clean.toLowerCase())) {
-        return alert("Ese nombre ya existe");
-      }
-      const newRef = ref(db, `participants/${clean}`);
-      set(newRef, { name: clean, points: 0 });
-      showStatus("✅ Nuevo agregado", "bg-green-100 text-green-700");
-    }
-
-    function refreshData() {
-      showStatus("Datos sincronizados", "bg-blue-100 text-blue-700");
-    }
-  </script>
+  window.refreshData = function() {
+    showStatus("Datos sincronizados", "bg-blue-100 text-blue-700");
+  };
+</script>
 </body>
 </html>
