@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "name": "PRUEBA UNO",
+    "points": 5
+  },
+  {
+    "name": "PRUEBA DOS",
+    "points": 10
+  }
+]
