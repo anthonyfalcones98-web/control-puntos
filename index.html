@@ -9,7 +9,7 @@
   <style>
     body { 
       font-family: system-ui, -apple-system, sans-serif; 
-      background: linear-gradient(to bottom right, #a1d4ff, #6ab7ff); /* Celeste claro de tu imagen, un poco más oscuro */
+      background: linear-gradient(to bottom right, #5a9bd4, #3b6ea8); /* Celeste-azul más oscuro, buen contraste */
     }
     .card { transition: all 0.3s ease; }
     .card:hover { transform: translateY(-8px); }
@@ -21,25 +21,31 @@
       box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35); 
       border: 4px solid white; 
     }
+    /* Evitar que el botón tape el crédito en móviles */
+    @media (max-width: 640px) {
+      .admin-btn {
+        bottom: 32 !important; /* 32 = 8rem = ~128px desde abajo */
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen py-8">
 
   <div class="max-w-6xl mx-auto px-6">
 
-    <!-- Header imagen más grande -->
+    <!-- Header imagen -->
     <div class="flex justify-center mb-12">
       <img src="header.jpeg" alt="Header" class="header-img">
     </div>
 
-   
-  <p class="text-center text-white text-2xl mb-12 drop-shadow-md"> 🏆 Revisa tus puntos 🏆 </p>
+    <h1 class="text-6xl font-bold text-center text-white mb-3 drop-shadow-lg">🏆 SISTEMA DE PUNTOS</h1>
+    <p class="text-center text-white text-2xl mb-12 drop-shadow-md">🏆 Revisa tus puntos 🏆</p>
 
     <!-- Buscador -->
     <div class="max-w-2xl mx-auto mb-12">
-      <input id="searchInput" 
-             type="text" 
-             placeholder="🔎 Escriba su nombre..." 
+      <input id="searchInput"
+             type="text"
+             placeholder="🔎 Escriba su nombre..."
              class="w-full px-8 py-6 text-2xl rounded-3xl border-2 border-white/40 focus:border-white focus:outline-none shadow-2xl bg-white/30 backdrop-blur-md text-white placeholder-white/70">
     </div>
 
@@ -54,19 +60,19 @@
     <!-- Grid de tarjetas -->
     <div id="participantsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-    <!-- Botón Admin flotante -->
-    <button onclick="showLoginModal()" 
-            class="fixed bottom-8 right-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-10 py-5 rounded-3xl text-xl font-semibold shadow-2xl flex items-center gap-3 z-50 transition-all">
+    <!-- Botón Admin flotante - movido más arriba en móviles -->
+    <button onclick="showLoginModal()"
+            class="admin-btn fixed bottom-32 sm:bottom-8 right-8 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-700 hover:to-blue-800 text-white px-10 py-5 rounded-3xl text-xl font-semibold shadow-2xl flex items-center gap-3 z-50 transition-all">
       <i class="fas fa-user-shield"></i>
       <span>Administrador</span>
     </button>
 
   </div>
 
-  <!-- Crédito -->
+  <!-- Crédito - bien visible y sin superposición -->
   <div class="fixed bottom-16 left-6 z-40 md:left-8 lg:left-12">
     <a href="https://www.instagram.com/Anthonovsky27" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-3 text-white hover:text-pink-300 transition-all duration-300 text-lg font-medium bg-black/40 px-5 py-3 rounded-full shadow-md backdrop-blur-sm">
+       class="flex items-center gap-3 text-white hover:text-pink-300 transition-all duration-300 text-lg font-medium bg-black/50 px-5 py-3 rounded-full shadow-md backdrop-blur-sm">
       <i class="fab fa-instagram text-2xl"></i>
       <span>Anthony Falcones Alcívar</span>
     </a>
